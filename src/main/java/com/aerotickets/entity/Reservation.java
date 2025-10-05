@@ -2,7 +2,6 @@ package com.aerotickets.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.Instant;
 
 @Entity
@@ -20,12 +19,12 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // user who booked
+    // Usuario que hizo la reserva
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id")
     private User user;
 
-    // flight reserved
+    // Vuelo reservado
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "flight_id")
     private Flight flight;
@@ -36,6 +35,7 @@ public class Reservation {
     @Column(nullable = false)
     private String status; // ACTIVA, CANCELADA
 
+    @Builder.Default
     @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 }

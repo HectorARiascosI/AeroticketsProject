@@ -2,7 +2,6 @@ package com.aerotickets.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.Instant;
 
 @Entity
@@ -15,6 +14,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @Builder
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,12 +28,15 @@ public class User {
     @Column(nullable = false)
     private String passwordHash;
 
+    @Builder.Default
     @Column(nullable = false)
     private String role = "USER";
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean enabled = true;
 
+    @Builder.Default
     @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 }
