@@ -1,18 +1,17 @@
 package com.aerotickets.dto;
 
-import lombok.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class ReservationRequestDTO {
     @NotNull
-    private Long userId;
-    @NotNull
     private Long flightId;
-    private Integer seatNumber; // nullable -> auto-assign if null
-    // optional: paymentMethod later
+
+    @Positive(message = "El asiento debe ser positivo")
+    private Integer seatNumber; // opcional
+
+    public Long getFlightId() { return flightId; }
+    public void setFlightId(Long flightId) { this.flightId = flightId; }
+    public Integer getSeatNumber() { return seatNumber; }
+    public void setSeatNumber(Integer seatNumber) { this.seatNumber = seatNumber; }
 }

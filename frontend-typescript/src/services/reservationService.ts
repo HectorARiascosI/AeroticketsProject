@@ -1,15 +1,23 @@
 import api from "./api";
-import type { ReservationRequest } from "../types";
 
-export const createReservation = async (payload: ReservationRequest): Promise<string> => {
-  const res = await api.post("/reservations", payload, { responseType: "text" });
-  return res.data as string;
+// DTOs (ajústalos si ya los tienes en /types)
+export type CreateReservationPayload = {
+  flightId: number;
+  seatNumber?: number; // opcional
 };
 
-export const cancelReservation = async (reservationId: number, userId: number): Promise<string> => {
-  const res = await api.post(`/reservations/${reservationId}/cancel`, null, {
-    params: { userId },
-    responseType: "text",
-  });
-  return res.data as string;
-};
+export async function getMyReservations() {
+  const res = await api.get("/reservations/my"); // ✅ OJO: /my (no /me)
+  return res.data;
+}
+
+export async function createReservation(payload: CreateReservationPayload) {
+  const res = await api.post("/reservations", payload);
+  return res.data;
+}
+
+export async function cancelReservation(id: number) {
+  // Backend expone DELETE /api/reservations/{id}
+  const res = await api.delete(`/reservations/${id}`);
+  return res.data;
+}

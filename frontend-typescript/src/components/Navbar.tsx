@@ -1,6 +1,6 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { logout } from "@/services/authService";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 export default function Navbar() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -9,24 +9,30 @@ export default function Navbar() {
   const location = useLocation();
 
   // Ocultar Navbar en rutas específicas
-  const hiddenPaths = ["/login", "/register"];
+  const hiddenPaths = useMemo(
+    () => ["/login", "/register", "/forgot-password", "/reset-password"],
+    []
+  );
   if (hiddenPaths.includes(location.pathname)) {
     return null;
   }
 
   useEffect(() => {
     const token = localStorage.getItem("vueler_token");
-    const user = localStorage.getItem("vueler_user");
+    const userStr = localStorage.getItem("vueler_user");
     setLoggedIn(!!token);
-    if (user) {
+
+    if (userStr) {
       try {
-        const parsed = JSON.parse(user);
-        setUserName(parsed.fullName || null);
+        const u = JSON.parse(userStr);
+        setUserName(u.fullName || null);
       } catch {
         setUserName(null);
       }
+    } else {
+      setUserName(null);
     }
-  }, [location.pathname]); // se actualiza si cambia la ruta
+  }, [location.pathname]);
 
   function handleLogout() {
     logout();
@@ -34,21 +40,33 @@ export default function Navbar() {
     nav("/login");
   }
 
+  const linkClass = (path: string) =>
+    `text-sm px-2 py-1 rounded ${
+      location.pathname.startsWith(path)
+        ? "text-blue-700 font-semibold bg-blue-50"
+        : "text-gray-600 hover:text-blue-600"
+    }`;
+
   return (
     <nav className="bg-white shadow px-4 py-3">
       <div className="max-w-6xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link to="/flights" className="text-xl font-bold text-blue-600">
-            Aerotickets
+            Vueler
           </Link>
-          <Link to="/flights" className="text-sm text-gray-600 hover:text-blue-600">
+          <Link to="/flights" className={linkClass("/flights")}>
             Vuelos
+          </Link>
+          <Link to="/reservations" className={linkClass("/reservations")}>
+            Mis Reservas
           </Link>
         </div>
 
         {loggedIn ? (
           <div className="flex items-center gap-3">
-            {userName && <span className="text-gray-700 text-sm">👤 {userName}</span>}
+            {userName && (
+              <span className="text-gray-700 text-sm">👤 {userName}</span>
+            )}
             <button
               onClick={handleLogout}
               className="text-sm bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"

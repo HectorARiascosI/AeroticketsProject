@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/aerotickets?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: root        # ⚠️ Cambia si usas otro usuario
+    password: ""          # ⚠️ Pon tu contraseña si tienes
+  jpa:
+    hibernate:
+      ddl-auto: none      # No recrea tablas (mantiene tus datos)
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 8080              # Tu backend sigue en el puerto 8080
+
+vueler:
+  jwt:
+    secret: "746B436D49794C75526A536B56566E586B48756A4E5442304E43755963615674"
+    expiration-minutes: 120

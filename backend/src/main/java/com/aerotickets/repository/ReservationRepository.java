@@ -1,18 +1,19 @@
 package com.aerotickets.repository;
 
-import com.aerotickets.entity.Flight;
 import com.aerotickets.entity.Reservation;
+import com.aerotickets.entity.ReservationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
-    boolean existsByFlightAndSeatNumber(Flight flight, Integer seatNumber);
+    long countByFlightIdAndStatus(Long flightId, ReservationStatus status);
 
-    @Query("select r.seatNumber from Reservation r where r.flight.id = ?1 and r.status = 'ACTIVA'")
-    List<Integer> findBookedSeatsByFlightId(Long flightId);
+    boolean existsByFlightIdAndSeatNumberAndStatus(Long flightId, Integer seatNumber, ReservationStatus status);
 
-    long countByFlightIdAndStatus(Long flightId, String status);
+    List<Reservation> findByUserEmailOrderByCreatedAtDesc(String email);
+
+    Optional<Reservation> findByIdAndUserEmail(Long id, String email);
 }

@@ -2,12 +2,25 @@ package com.aerotickets.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.Instant;
 
+import static jakarta.persistence.FetchType.LAZY;
+
 @Entity
-@Table(name = "reservations", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"flight_id", "seat_number"})
-})
+@Table(
+        name = "reservations",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_res_flight_seat_active",
+                        columnNames = {"flight_id", "seat_number", "status"}
+                ),
+                @UniqueConstraint(
+                        name = "uk_res_flight_user_active",
+                        columnNames = {"flight_id", "user_id", "status"}
+                )
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,23 +32,30 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Usuario que hizo la reserva
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id")
+    @ManyToOne(optional = false, fetch = LAZY)
+    @JoinColumn(name = "user_id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "fk_res_user"))
     private User user;
 
-    // Vuelo reservado
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "flight_id")
+    @ManyToOne(optional = false, fetch = LAZY)
+    @JoinColumn(name = "flight_id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "fk_res_flight"))
     private Flight flight;
 
-    @Column(name = "seat_number", nullable = false)
+    @Column(name = "seat_number")
     private Integer seatNumber;
 
-    @Column(nullable = false)
-    private String status; // ACTIVA, CANCELADA
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 20)
+    private ReservationStatus status = ReservationStatus.ACTIVE;
 
     @Builder.Default
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
+
+    @Version
+    private Integer version;
 }
