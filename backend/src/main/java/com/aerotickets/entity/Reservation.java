@@ -2,29 +2,18 @@ package com.aerotickets.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.Instant;
-
-import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Table(
-        name = "reservations",
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "uk_res_flight_seat_active",
-                        columnNames = {"flight_id", "seat_number", "status"}
-                ),
-                @UniqueConstraint(
-                        name = "uk_res_flight_user_active",
-                        columnNames = {"flight_id", "user_id", "status"}
-                )
-        }
+    name = "reservations",
+    uniqueConstraints = {
+        @UniqueConstraint(name = "uk_res_flight_seat_active", columnNames = {"flight_id", "seat_number", "status"}),
+        @UniqueConstraint(name = "uk_res_flight_user_active", columnNames = {"flight_id", "user_id", "status"})
+    }
 )
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 @Builder
 public class Reservation {
 
@@ -32,16 +21,12 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false, fetch = LAZY)
-    @JoinColumn(name = "user_id",
-            nullable = false,
-            foreignKey = @ForeignKey(name = "fk_res_user"))
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_res_user"))
     private User user;
 
-    @ManyToOne(optional = false, fetch = LAZY)
-    @JoinColumn(name = "flight_id",
-            nullable = false,
-            foreignKey = @ForeignKey(name = "fk_res_flight"))
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "flight_id", nullable = false, foreignKey = @ForeignKey(name = "fk_res_flight"))
     private Flight flight;
 
     @Column(name = "seat_number")

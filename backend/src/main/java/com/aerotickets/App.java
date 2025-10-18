@@ -6,17 +6,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class App {
+    public static void main(String[] args) {
+        // Cargar variables desde .env si existe
+        Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+        String dbUrl = dotenv.get("DB_URL");
+        System.out.println("Base de datos configurada: " + dbUrl);
 
-  public static void main(String[] args) {
-    // 🔹 Cargar automáticamente variables desde .env
-    Dotenv dotenv = Dotenv.load();
-
-    // 🔹 Inyectarlas al entorno de Java
-    dotenv.entries().forEach(entry -> System.setProperty(entry.getKey(), entry.getValue()));
-
-    // 🔹 Arrancar la app normalmente
-    SpringApplication.run(App.class, args);
-
-    System.out.println("✅ Vueler Backend corriendo en http://localhost:8080");
-  }
+        SpringApplication.run(App.class, args);
+    }
 }

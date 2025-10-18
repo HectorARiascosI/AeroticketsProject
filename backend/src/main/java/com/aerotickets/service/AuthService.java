@@ -5,11 +5,12 @@ import com.aerotickets.dto.LoginRequestDTO;
 import com.aerotickets.dto.UserRegistrationDTO;
 import com.aerotickets.entity.User;
 import com.aerotickets.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.User.UserBuilder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import jakarta.transaction.Transactional;
 
 @Service
 public class AuthService {
@@ -17,10 +18,12 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
     private final AuthenticationManager authManager;
-    private final JwtService jwtService;  // 👈 usa JwtService, no JwtUtil
+    private final JwtService jwtService;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder encoder,
-                       AuthenticationManager authManager, JwtService jwtService) {
+    public AuthService(UserRepository userRepository,
+                       PasswordEncoder encoder,
+                       AuthenticationManager authManager,
+                       JwtService jwtService) {
         this.userRepository = userRepository;
         this.encoder = encoder;
         this.authManager = authManager;
@@ -37,17 +40,15 @@ public class AuthService {
         u.setFullName(dto.getFullName());
         u.setEmail(dto.getEmail());
         u.setPasswordHash(encoder.encode(dto.getPassword()));
+        u.setRole("USER");
         userRepository.save(u);
 
-        // 🔑 Generar token con JwtService
-        String token = jwtService.generateToken(
-                org.springframework.security.core.userdetails.User.builder()
-                        .username(u.getEmail())
-                        .password(u.getPasswordHash())
-                        .roles("USER")
-                        .build()
-        );
+        UserBuilder ub = org.springframework.security.core.userdetails.User.builder()
+                .username(u.getEmail())
+                .password(u.getPasswordHash())
+                .roles("USER");
 
+        String token = jwtService.generateToken(ub.build());
         return new AuthResponseDTO(token, u.getFullName(), u.getEmail());
     }
 
@@ -55,16 +56,14 @@ public class AuthService {
         var auth = new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword());
         authManager.authenticate(auth);
 
-        var user = userRepository.findByEmail(dto.getEmail()).orElseThrow();
+        var u = userRepository.findByEmail(dto.getEmail()).orElseThrow();
 
-        String token = jwtService.generateToken(
-                org.springframework.security.core.userdetails.User.builder()
-                        .username(user.getEmail())
-                        .password(user.getPasswordHash())
-                        .roles("USER")
-                        .build()
-        );
+        UserBuilder ub = org.springframework.security.core.userdetails.User.builder()
+                .username(u.getEmail())
+                .password(u.getPasswordHash())
+                .roles(u.getRole() != null ? u.getRole() : "USER");
 
-        return new AuthResponseDTO(token, user.getFullName(), user.getEmail());
+        String token = jwtService.generateToken(ub.build());
+        return new AuthResponseDTO(token, u.getFullName(), u.getEmail());
     }
 }
