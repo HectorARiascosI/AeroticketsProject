@@ -1,33 +1,23 @@
-export interface Flight {
-  id: number;
-  airline: string;
-  origin: string;
-  destination: string;
-  departureAt: string; // ISO string from backend
-  arriveAt: string;    // ISO string
-  totalSeats: number;
-  price: number; // backend sends numeric (BigDecimal -> number)
-  version?: number;
+export type Flight = {
+  id: number
+  origin: string
+  destination: string
+  airline: string
+  price: number
+  availableSeats: number
+  departureTime: string
+  arrivalTime: string
 }
 
-export interface ReservationRequest {
-  userId: number;
-  flightId: number;
-  seatNumber?: number | null;
-  // paymentMethod?: string;
+export type Reservation = {
+  id: number
+  status: 'ACTIVE' | 'CANCELLED'
+  createdAt: string
+  flight: Flight
 }
 
-export interface UserRegistration {
-  fullName: string;
-  email: string;
-  password: string;
-}
-
-export interface UserResponse {
-  id: number;
-  fullName: string;
-  email: string;
-  role: string;
-  enabled: boolean;
-  createdAt: string;
+export type User = {
+  id: number
+  username: string
+  email: string
 }

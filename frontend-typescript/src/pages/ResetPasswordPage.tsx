@@ -1,46 +1,40 @@
-import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import api from "@/services/api";
+import { useParams, useNavigate } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import Card from '@/components/ui/Card'
+import Input from '@/components/ui/Input'
+import Button from '@/components/ui/Button'
+import { resetPassword } from '@/services/authService'
+import toast from 'react-hot-toast'
+
+const schema = z.object({ password: z.string().min(4, 'Mínimo 4 caracteres') })
+type FormData = z.infer<typeof schema>
 
 export default function ResetPasswordPage() {
-  const [searchParams] = useSearchParams();
-  const token = searchParams.get("token");
-  const [newPassword, setNewPassword] = useState("");
-  const [msg, setMsg] = useState("");
+  const { token } = useParams()
+  const navigate = useNavigate()
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({ resolver: zodResolver(schema) })
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  const onSubmit = async (data: FormData) => {
     try {
-      const { data } = await api.post("/auth/reset-password", {
-        token,
-        newPassword,
-      });
-      setMsg(data);
-    } catch (err: any) {
-      setMsg(err?.response?.data || "Error al actualizar la contraseña");
+      await resetPassword(token!, data.password)
+      toast.success('Contraseña actualizada')
+      navigate('/login')
+    } catch (e: any) {
+      toast.error(e?.response?.data?.message ?? 'No fue posible actualizar la contraseña')
     }
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white p-6 rounded shadow max-w-md w-full">
-        <h1 className="text-xl font-bold mb-4 text-center">
-          Nueva contraseña
-        </h1>
-        <form onSubmit={onSubmit} className="space-y-3">
-          <input
-            type="password"
-            className="w-full border p-2 rounded"
-            placeholder="Nueva contraseña"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
-          <button className="bg-green-600 text-white px-4 py-2 rounded w-full">
-            Guardar nueva contraseña
-          </button>
+    <div className="min-h-screen grid place-items-center">
+      <Card className="w-full max-w-md">
+        <h1 className="text-xl font-semibold mb-3">Nueva contraseña</h1>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+          <Input label="Contraseña" type="password" {...register('password')} error={errors.password?.message} />
+          <Button type="submit" loading={isSubmitting} className="w-full">Actualizar</Button>
         </form>
-        {msg && <p className="mt-3 text-center text-gray-700">{msg}</p>}
-      </div>
+      </Card>
     </div>
-  );
+  )
 }
