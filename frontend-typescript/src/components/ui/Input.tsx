@@ -1,30 +1,23 @@
-import { forwardRef, InputHTMLAttributes } from 'react'
-import clsx from 'clsx'
+import React from "react";
 
-type Props = InputHTMLAttributes<HTMLInputElement> & {
-  label?: string
-  error?: string
-}
+type Props = React.InputHTMLAttributes<HTMLInputElement> & {
+  label?: string;
+  error?: string;
+};
 
-/**
- * Input con soporte para forwardRef (necesario para React Hook Form)
- */
-const Input = forwardRef<HTMLInputElement, Props>(({ label, error, className, ...rest }, ref) => {
+export const Input = React.forwardRef<HTMLInputElement, Props>(({ label, error, ...rest }, ref) => {
   return (
-    <label className="block w-full">
-      {label && <span className="block mb-1 text-sm font-medium">{label}</span>}
+    <div className="flex flex-col gap-1">
+      {label && <label className="text-sm text-gray-300">{label}</label>}
       <input
         ref={ref}
-        className={clsx(
-          'w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:ring-2 focus:ring-primary focus:border-transparent',
-          className
-        )}
         {...rest}
+        className="rounded-md bg-gray-800 border border-gray-700 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
       />
-      {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
-    </label>
-  )
-})
+      {error && <span className="text-xs text-red-400">{error}</span>}
+    </div>
+  );
+});
 
-Input.displayName = 'Input'
-export default Input
+Input.displayName = "Input";
+export default Input;

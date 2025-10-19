@@ -1,11 +1,5 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import api from "@/api/api";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import api, { ENDPOINTS } from "@/api/api";
 import toast from "react-hot-toast";
 
 type User = {
@@ -19,19 +13,13 @@ type AuthContextType = {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (data: {
-    username: string;
-    email: string;
-    password: string;
-  }) => Promise<void>;
+  register: (payload: { username: string; email: string; password: string }) => Promise<void>;
   logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -44,11 +32,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setLoading(false);
   }, []);
 
-  const register = async (payload: {
-    username: string;
-    email: string;
-    password: string;
-  }) => {
+  const register = async (payload: { username: string; email: string; password: string }) => {
     await api.post(ENDPOINTS.AUTH.REGISTER, {
       fullName: payload.username,
       email: payload.email,
@@ -72,19 +56,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     toast("Sesión cerrada");
   };
 
-  const value = useMemo(
-    () => ({ user, loading, login, register, logout }),
-    [user, loading]
-  );
-
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
+  const value = useMemo(() => ({ user, loading, login, register, logout }), [user, loading]);
+  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
 };
 
-// 👇 Exportación necesaria para Navbar, páginas, etc.
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth debe usarse dentro de un AuthProvider");

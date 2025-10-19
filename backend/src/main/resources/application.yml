@@ -11,33 +11,27 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+    open-in-view: false
     show-sql: false
     properties:
       hibernate:
         format_sql: true
-    open-in-view: false
 
   flyway:
     enabled: false
 
-# === LOGGING CORPORATIVO ===
 logging:
   file:
     name: logs/aerotickets.log
   level:
     root: INFO
     com.aerotickets: DEBUG
-    org.springframework.security: DEBUG   # 👈 ver autenticación
-    org.springframework.web: DEBUG        # 👈 ver peticiones HTTP
-    org.hibernate.SQL: DEBUG              # 👈 ver consultas SQL
+    org.springframework.security: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: WARN
   pattern:
     console: "%clr(%d{yyyy-MM-dd HH:mm:ss}){faint} | %clr(%-5level){cyan} | %clr(%logger{36}){blue} | %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} | %-5level | %logger{36} | %msg%n"
-
-vueler:
-  jwt:
-    secret: "746B436D49794C75526A536B56566E586B48756A4E5442304E43755963615674"
-    expiration-minutes: 120
 
 management:
   endpoints:
@@ -47,3 +41,8 @@ management:
   endpoint:
     health:
       show-details: when_authorized
+
+vueler:
+  jwt:
+    secret: "ClaveUltraSeguraAeroticketsJWT_2025_Con32Caracteres_O_Mas"
+    expiration-minutes: 120

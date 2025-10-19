@@ -1,9 +1,10 @@
 package com.aerotickets.security;
 
 import com.aerotickets.entity.User;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -13,51 +14,50 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    // 🔐 Clave secreta segura (mínimo 32 caracteres)
-    private static final String SECRET_KEY = "ClaveUltraSeguraAeroticketsJWT_2025";
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 hora
+    @Value("${vueler.jwt.secret}")
+    private String secretValue;
 
-    // ✅ Genera una llave válida a partir del texto
+    @Value("${vueler.jwt.expiration-minutes:120}")
+    private long expirationMinutes;
+
     private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+        return Keys.hmacShaKeyFor(secretValue.getBytes(StandardCharsets.UTF_8));
     }
 
-    // ✅ Genera token sin warnings
     public String generateToken(User user) {
+        long expirationMs = expirationMinutes * 60 * 1000;
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("name", user.getFullName())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256) // 🔒 nuevo formato
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // ✅ Validación del token
-    public boolean validateToken(String token, User user) {
-        String email = extractEmail(token);
-        return (email.equals(user.getEmail()) && !isTokenExpired(token));
+    public String extractEmail(String token) {
+        return parseClaims(token).getSubject();
+    }
+
+    // Alias para compatibilidad con filtros que llamaban extractUsername
+    public String extractUsername(String token) {
+        return extractEmail(token);
+    }
+
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        final String email = extractEmail(token);
+        return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
     private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        return parseClaims(token).getExpiration().before(new Date());
     }
 
-    private Date extractExpiration(String token) {
+    private Claims parseClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getExpiration();
-    }
-
-    public String extractEmail(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
     }
 }
