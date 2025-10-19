@@ -1,43 +1,32 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useAuth } from '@/auth/AuthContext'
-import Button from './ui/Button'
+import { Link, NavLink } from "react-router-dom";
+import { useAuth } from "@/auth/AuthContext";
 
 export default function Navbar() {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
-  const { pathname } = useLocation()
-
-  const onLogout = () => {
-    logout()
-    navigate('/login')
-  }
+  const { user, logout } = useAuth();
 
   return (
-    <nav className="bg-dark text-white px-5 py-3 shadow">
-      <div className="max-w-6xl mx-auto flex items-center justify-between">
-        <Link to="/flights" className="font-bold tracking-wider text-lg">
+    <header className="bg-white shadow-sm sticky top-0 z-10">
+      <nav className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
+        <Link to="/" className="font-extrabold tracking-wide text-sky-600">
           AEROTICKETS
         </Link>
-        <div className="flex items-center gap-4">
+
+        <div className="flex items-center gap-4 text-sm">
           {user ? (
             <>
-              <Link className={pathname.startsWith('/flights') ? 'text-primary' : 'hover:text-primary'} to="/flights">
-                Vuelos
-              </Link>
-              <Link className={pathname.startsWith('/reservations') ? 'text-primary' : 'hover:text-primary'} to="/reservations">
-                Mis Reservas
-              </Link>
-              <span className="text-sm text-gray-300">Hola, {user.username ?? user.email}</span>
-              <Button variant="danger" onClick={onLogout}>Salir</Button>
+              <NavLink className="hover:text-sky-600" to="/flights">Vuelos</NavLink>
+              <NavLink className="hover:text-sky-600" to="/reservations">Mis reservas</NavLink>
+              <button onClick={logout} className="text-red-600 hover:underline">Salir</button>
+              <span className="text-gray-500">| {user.fullName ?? user.email}</span>
             </>
           ) : (
             <>
-              <Link className="hover:text-primary" to="/login">Ingresar</Link>
-              <Link className="hover:text-primary" to="/register">Registrarse</Link>
+              <NavLink className="hover:text-sky-600" to="/login">Ingresar</NavLink>
+              <NavLink className="hover:text-sky-600" to="/register">Registrarse</NavLink>
             </>
           )}
         </div>
-      </div>
-    </nav>
-  )
+      </nav>
+    </header>
+  );
 }

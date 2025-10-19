@@ -1,23 +1,16 @@
 export type Flight = {
-  id: number
-  origin: string
-  destination: string
-  airline: string
-  price: number
-  availableSeats: number
-  departureTime: string
-  arrivalTime: string
-}
+  id: number;
+  origin: string;
+  destination: string;
+  departureTime: string;
+  arrivalTime: string;
+  price: number;
+  airline: string;
+};
 
 export type Reservation = {
-  id: number
-  status: 'ACTIVE' | 'CANCELLED'
-  createdAt: string
-  flight: Flight
-}
-
-export type User = {
-  id: number
-  username: string
-  email: string
-}
+  id: number;
+  status: "ACTIVE" | "CANCELLED";
+  flight: Flight;
+  createdAt?: string;
+};

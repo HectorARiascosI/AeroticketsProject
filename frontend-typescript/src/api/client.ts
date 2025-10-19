@@ -1,28 +1,34 @@
-import axios from 'axios'
+import axios from "axios";
+
+const BASE_URL =
+  import.meta.env.VITE_API_URL?.toString().trim() || "http://localhost:8080/api";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  headers: { 'Content-Type': 'application/json' }
-})
+  baseURL: BASE_URL,
+  headers: { "Content-Type": "application/json" },
+});
 
-// inyectar token
+// inyecta token
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token')
-  if (token) config.headers.Authorization = `Bearer ${token}`
-  return config
-})
+  const token = localStorage.getItem("token");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
-// manejo global de errores 401/403
+// manejo global 401/403
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    const status = err.response?.status
+    const status = err.response?.status;
     if (status === 401 || status === 403) {
-      localStorage.removeItem('token')
-      window.location.href = '/login'
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
     }
-    return Promise.reject(err)
+    return Promise.reject(err);
   }
-)
+);
 
-export default api
+export default api;

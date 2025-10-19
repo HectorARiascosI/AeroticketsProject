@@ -1,8 +1,15 @@
-import api from '@/api/client'
-import { ENDPOINTS } from '@/api/endpoints'
-import type { Flight } from '@/types'
+import api from "@/api/client";
+import { ENDPOINTS } from "@/api/endpoints";
+import { Flight } from "@/types";
 
-export async function getFlights(filters: { origin?: string; destination?: string; date?: string; airline?: string }) {
-  const { data } = await api.get<Flight[]>(ENDPOINTS.FLIGHTS, { params: filters })
-  return data
+export type FlightFilters = Partial<{
+  origin: string;
+  destination: string;
+  date: string;
+  airline: string;
+}>;
+
+export async function getFlights(filters?: FlightFilters): Promise<Flight[]> {
+  const { data } = await api.get(ENDPOINTS.FLIGHTS, { params: filters });
+  return data;
 }

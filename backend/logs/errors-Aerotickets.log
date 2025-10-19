@@ -24,3 +24,5 @@ Caused by: org.springframework.context.annotation.ConflictingBeanDefinitionExcep
 	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:197)
 	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:165)
 	... 13 common frames omitted
+2025-10-19 15:25:59 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/reservations/my - 500 (88 ms)[0m
+2025-10-19 15:26:00 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/reservations/my - 500 (29 ms)[0m

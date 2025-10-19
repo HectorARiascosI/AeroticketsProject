@@ -367,3 +367,163 @@ Caused by: org.springframework.context.annotation.ConflictingBeanDefinitionExcep
 2025-10-19 13:11:41 | INFO  | o.s.o.j.LocalContainerEntityManagerFactoryBean | Closing JPA EntityManagerFactory for persistence unit 'default'
 2025-10-19 13:11:41 | INFO  | com.zaxxer.hikari.HikariDataSource | HikariPool-1 - Shutdown initiated...
 2025-10-19 13:11:41 | INFO  | com.zaxxer.hikari.HikariDataSource | HikariPool-1 - Shutdown completed.
+2025-10-19 13:12:34 | INFO  | o.h.validator.internal.util.Version | HV000001: Hibernate Validator 8.0.1.Final
+2025-10-19 13:12:34 | INFO  | com.aerotickets.App | Starting App using Java 21.0.8 with PID 10020 (C:\Users\Familia\Desktop\AeroticketsProject\backend\target\classes started by Familia in C:\Users\Familia\Desktop\AeroticketsProject\backend)
+2025-10-19 13:12:34 | DEBUG | com.aerotickets.App | Running with Spring Boot v3.3.2, Spring v6.1.11
+2025-10-19 13:12:34 | INFO  | com.aerotickets.App | No active profile set, falling back to 1 default profile: "default"
+2025-10-19 13:12:38 | INFO  | o.s.d.r.c.RepositoryConfigurationDelegate | Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-19 13:12:38 | INFO  | o.s.d.r.c.RepositoryConfigurationDelegate | Finished Spring Data repository scanning in 170 ms. Found 3 JPA repository interfaces.
+2025-10-19 13:12:40 | INFO  | o.s.b.w.e.tomcat.TomcatWebServer | Tomcat initialized with port 8080 (http)
+2025-10-19 13:12:40 | INFO  | o.a.coyote.http11.Http11NioProtocol | Initializing ProtocolHandler ["http-nio-8080"]
+2025-10-19 13:12:40 | INFO  | o.a.catalina.core.StandardService | Starting service [Tomcat]
+2025-10-19 13:12:40 | INFO  | o.a.catalina.core.StandardEngine | Starting Servlet engine: [Apache Tomcat/10.1.26]
+2025-10-19 13:12:41 | INFO  | o.a.c.c.C.[Tomcat].[localhost].[/] | Initializing Spring embedded WebApplicationContext
+2025-10-19 13:12:41 | INFO  | o.s.b.w.s.c.ServletWebServerApplicationContext | Root WebApplicationContext: initialization completed in 6204 ms
+2025-10-19 13:12:41 | INFO  | o.h.jpa.internal.util.LogHelper | HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-19 13:12:43 | INFO  | org.hibernate.Version | HHH000412: Hibernate ORM core version 6.5.2.Final
+2025-10-19 13:12:43 | INFO  | o.h.c.i.RegionFactoryInitiator | HHH000026: Second-level cache disabled
+2025-10-19 13:12:45 | INFO  | o.s.o.j.p.SpringPersistenceUnitInfo | No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-19 13:12:46 | INFO  | com.zaxxer.hikari.HikariDataSource | HikariPool-1 - Starting...
+2025-10-19 13:12:47 | INFO  | com.zaxxer.hikari.pool.HikariPool | HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1ff463bb
+2025-10-19 13:12:47 | INFO  | com.zaxxer.hikari.HikariDataSource | HikariPool-1 - Start completed.
+2025-10-19 13:12:53 | INFO  | o.h.e.t.j.p.i.JtaPlatformInitiator | HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-19 13:12:59 | INFO  | o.s.o.j.LocalContainerEntityManagerFactoryBean | Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-19 13:13:01 | DEBUG | c.aerotickets.security.JwtAuthFilter | Filter 'jwtAuthFilter' configured for use
+2025-10-19 13:13:01 | INFO  | o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer | Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2025-10-19 13:13:02 | DEBUG | o.s.s.web.DefaultSecurityFilterChain | Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtAuthFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-10-19 13:13:03 | INFO  | o.a.coyote.http11.Http11NioProtocol | Starting ProtocolHandler ["http-nio-8080"]
+2025-10-19 13:13:03 | INFO  | o.s.b.w.e.tomcat.TomcatWebServer | Tomcat started on port 8080 (http) with context path '/'
+2025-10-19 13:13:03 | INFO  | com.aerotickets.App | Started App in 30.494 seconds (process running for 32.724)
+2025-10-19 13:26:54 | INFO  | o.a.c.c.C.[Tomcat].[localhost].[/] | Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-19 13:26:54 | INFO  | o.s.web.servlet.DispatcherServlet | Initializing Servlet 'dispatcherServlet'
+2025-10-19 13:26:54 | INFO  | o.s.web.servlet.DispatcherServlet | Completed initialization in 3 ms
+2025-10-19 13:26:54 | DEBUG | o.s.security.web.FilterChainProxy | Securing POST /api/auth/register
+2025-10-19 13:26:54 | DEBUG | o.s.s.w.a.AnonymousAuthenticationFilter | Set SecurityContextHolder to anonymous SecurityContext
+2025-10-19 13:26:54 | DEBUG | o.s.security.web.FilterChainProxy | Secured POST /api/auth/register
+2025-10-19 13:26:58 | INFO  | c.a.config.RequestLoggingFilter | ➡️ POST /api/auth/register completado en 3237 ms
+2025-10-19 13:26:58 | WARN  | c.a.config.PerformanceLoggingFilter | ⚠️ Petición lenta detectada: POST /api/auth/register (3238 ms)
+2025-10-19 13:30:01 | DEBUG | o.s.security.web.FilterChainProxy | Securing POST /api/auth/login
+2025-10-19 13:30:01 | DEBUG | o.s.s.w.a.AnonymousAuthenticationFilter | Set SecurityContextHolder to anonymous SecurityContext
+2025-10-19 13:30:01 | DEBUG | o.s.security.web.FilterChainProxy | Secured POST /api/auth/login
+2025-10-19 13:30:02 | DEBUG | o.s.s.a.d.DaoAuthenticationProvider | Authenticated user
+2025-10-19 13:30:07 | INFO  | c.a.config.RequestLoggingFilter | ➡️ POST /api/auth/login completado en 5734 ms
+2025-10-19 13:30:07 | WARN  | c.a.config.PerformanceLoggingFilter | ⚠️ Petición lenta detectada: POST /api/auth/login (5740 ms)
+2025-10-19 15:13:51 | INFO  | o.h.validator.internal.util.Version | HV000001: Hibernate Validator 8.0.1.Final
+2025-10-19 15:13:53 | INFO  | com.aerotickets.App | Starting App using Java 21.0.8 with PID 5800 (C:\Users\Familia\Desktop\AeroticketsProject\backend\target\classes started by Familia in C:\Users\Familia\Desktop\AeroticketsProject\backend)
+2025-10-19 15:13:53 | DEBUG | com.aerotickets.App | Running with Spring Boot v3.3.2, Spring v6.1.11
+2025-10-19 15:13:53 | INFO  | com.aerotickets.App | No active profile set, falling back to 1 default profile: "default"
+2025-10-19 15:14:23 | INFO  | o.s.d.r.c.RepositoryConfigurationDelegate | Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-19 15:14:24 | INFO  | o.s.d.r.c.RepositoryConfigurationDelegate | Finished Spring Data repository scanning in 1151 ms. Found 3 JPA repository interfaces.
+2025-10-19 15:14:37 | INFO  | o.s.b.w.e.tomcat.TomcatWebServer | Tomcat initialized with port 8080 (http)
+2025-10-19 15:14:37 | INFO  | o.a.coyote.http11.Http11NioProtocol | Initializing ProtocolHandler ["http-nio-8080"]
+2025-10-19 15:14:37 | INFO  | o.a.catalina.core.StandardService | Starting service [Tomcat]
+2025-10-19 15:14:37 | INFO  | o.a.catalina.core.StandardEngine | Starting Servlet engine: [Apache Tomcat/10.1.26]
+2025-10-19 15:14:39 | INFO  | o.a.c.c.C.[Tomcat].[localhost].[/] | Initializing Spring embedded WebApplicationContext
+2025-10-19 15:14:39 | INFO  | o.s.b.w.s.c.ServletWebServerApplicationContext | Root WebApplicationContext: initialization completed in 45521 ms
+2025-10-19 15:14:41 | INFO  | o.h.jpa.internal.util.LogHelper | HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-19 15:14:44 | INFO  | org.hibernate.Version | HHH000412: Hibernate ORM core version 6.5.2.Final
+2025-10-19 15:14:45 | INFO  | o.h.c.i.RegionFactoryInitiator | HHH000026: Second-level cache disabled
+2025-10-19 15:14:54 | INFO  | o.s.o.j.p.SpringPersistenceUnitInfo | No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-19 15:14:56 | INFO  | com.zaxxer.hikari.HikariDataSource | HikariPool-1 - Starting...
+2025-10-19 15:15:08 | INFO  | com.zaxxer.hikari.pool.HikariPool | HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@500ec769
+2025-10-19 15:15:08 | INFO  | com.zaxxer.hikari.HikariDataSource | HikariPool-1 - Start completed.
+2025-10-19 15:15:24 | INFO  | o.h.e.t.j.p.i.JtaPlatformInitiator | HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-19 15:15:57 | INFO  | o.s.o.j.LocalContainerEntityManagerFactoryBean | Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-19 15:16:04 | DEBUG | c.aerotickets.security.JwtAuthFilter | Filter 'jwtAuthFilter' configured for use
+2025-10-19 15:16:05 | INFO  | o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer | Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2025-10-19 15:16:09 | DEBUG | o.s.s.web.DefaultSecurityFilterChain | Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtAuthFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-10-19 15:16:16 | INFO  | o.a.coyote.http11.Http11NioProtocol | Starting ProtocolHandler ["http-nio-8080"]
+2025-10-19 15:16:18 | INFO  | o.s.b.w.e.tomcat.TomcatWebServer | Tomcat started on port 8080 (http) with context path '/'
+2025-10-19 15:16:18 | INFO  | com.aerotickets.App | Started App in 158.371 seconds (process running for 179.275)
+2025-10-19 15:21:49 | INFO  | o.a.c.c.C.[Tomcat].[localhost].[/] | Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-19 15:21:49 | INFO  | o.s.web.servlet.DispatcherServlet | Initializing Servlet 'dispatcherServlet'
+2025-10-19 15:21:49 | INFO  | o.s.web.servlet.DispatcherServlet | Completed initialization in 2 ms
+2025-10-19 15:21:50 | DEBUG | o.s.security.web.FilterChainProxy | Securing OPTIONS /api/auth/register
+2025-10-19 15:21:50 | DEBUG | o.s.security.web.FilterChainProxy | Securing POST /api/auth/register
+2025-10-19 15:21:50 | DEBUG | o.s.s.w.a.AnonymousAuthenticationFilter | Set SecurityContextHolder to anonymous SecurityContext
+2025-10-19 15:21:50 | DEBUG | o.s.security.web.FilterChainProxy | Secured POST /api/auth/register
+2025-10-19 15:21:52 | INFO  | c.a.config.RequestLoggingFilter | ➡️ POST /api/auth/register completado en 2101 ms
+2025-10-19 15:21:52 | WARN  | c.a.config.PerformanceLoggingFilter | ⚠️ Petición lenta detectada: POST /api/auth/register (2102 ms)
+2025-10-19 15:22:07 | DEBUG | o.s.security.web.FilterChainProxy | Securing OPTIONS /api/auth/login
+2025-10-19 15:22:07 | DEBUG | o.s.security.web.FilterChainProxy | Securing POST /api/auth/login
+2025-10-19 15:22:07 | DEBUG | o.s.s.w.a.AnonymousAuthenticationFilter | Set SecurityContextHolder to anonymous SecurityContext
+2025-10-19 15:22:07 | DEBUG | o.s.security.web.FilterChainProxy | Secured POST /api/auth/login
+2025-10-19 15:22:08 | DEBUG | o.s.s.a.d.DaoAuthenticationProvider | Authenticated user
+2025-10-19 15:22:08 | INFO  | c.a.config.RequestLoggingFilter | ➡️ POST /api/auth/login completado en 848 ms
+2025-10-19 15:22:08 | INFO  | c.a.config.PerformanceLoggingFilter | [0;32m➡️ POST /api/auth/login - 200 (851 ms)[0m
+2025-10-19 15:22:10 | DEBUG | o.s.security.web.FilterChainProxy | Securing OPTIONS /api/flights?origin=&destination=&date=&airline=
+2025-10-19 15:22:10 | DEBUG | o.s.security.web.FilterChainProxy | Securing OPTIONS /api/flights?origin=&destination=&date=&airline=
+2025-10-19 15:22:10 | DEBUG | o.s.security.web.FilterChainProxy | Securing GET /api/flights?origin=&destination=&date=&airline=
+2025-10-19 15:22:10 | DEBUG | o.s.security.web.FilterChainProxy | Secured GET /api/flights?origin=&destination=&date=&airline=
+2025-10-19 15:22:11 | INFO  | c.a.config.RequestLoggingFilter | ➡️ GET /api/flights completado en 110 ms
+2025-10-19 15:22:11 | INFO  | c.a.config.PerformanceLoggingFilter | [0;32m➡️ GET /api/flights - 200 (112 ms)[0m
+2025-10-19 15:22:11 | DEBUG | o.s.security.web.FilterChainProxy | Securing GET /api/flights?origin=&destination=&date=&airline=
+2025-10-19 15:22:11 | DEBUG | o.s.security.web.FilterChainProxy | Secured GET /api/flights?origin=&destination=&date=&airline=
+2025-10-19 15:22:11 | INFO  | c.a.config.RequestLoggingFilter | ➡️ GET /api/flights completado en 51 ms
+2025-10-19 15:22:11 | INFO  | c.a.config.PerformanceLoggingFilter | [0;32m➡️ GET /api/flights - 200 (57 ms)[0m
+2025-10-19 15:25:01 | DEBUG | o.s.security.web.FilterChainProxy | Securing OPTIONS /api/auth/register
+2025-10-19 15:25:01 | DEBUG | o.s.security.web.FilterChainProxy | Securing POST /api/auth/register
+2025-10-19 15:25:01 | DEBUG | o.s.s.w.a.AnonymousAuthenticationFilter | Set SecurityContextHolder to anonymous SecurityContext
+2025-10-19 15:25:01 | DEBUG | o.s.security.web.FilterChainProxy | Secured POST /api/auth/register
+2025-10-19 15:25:03 | INFO  | c.a.config.RequestLoggingFilter | ➡️ POST /api/auth/register completado en 1739 ms
+2025-10-19 15:25:03 | WARN  | c.a.config.PerformanceLoggingFilter | ⚠️ Petición lenta detectada: POST /api/auth/register (1747 ms)
+2025-10-19 15:25:18 | DEBUG | o.s.security.web.FilterChainProxy | Securing OPTIONS /api/auth/login
+2025-10-19 15:25:18 | DEBUG | o.s.security.web.FilterChainProxy | Securing POST /api/auth/login
+2025-10-19 15:25:18 | DEBUG | o.s.s.w.a.AnonymousAuthenticationFilter | Set SecurityContextHolder to anonymous SecurityContext
+2025-10-19 15:25:18 | DEBUG | o.s.security.web.FilterChainProxy | Secured POST /api/auth/login
+2025-10-19 15:25:19 | DEBUG | o.s.s.a.d.DaoAuthenticationProvider | Authenticated user
+2025-10-19 15:25:19 | INFO  | c.a.config.RequestLoggingFilter | ➡️ POST /api/auth/login completado en 169 ms
+2025-10-19 15:25:19 | INFO  | c.a.config.PerformanceLoggingFilter | [0;32m➡️ POST /api/auth/login - 200 (173 ms)[0m
+2025-10-19 15:25:19 | DEBUG | o.s.security.web.FilterChainProxy | Securing OPTIONS /api/flights?origin=&destination=&date=&airline=
+2025-10-19 15:25:19 | DEBUG | o.s.security.web.FilterChainProxy | Securing OPTIONS /api/flights?origin=&destination=&date=&airline=
+2025-10-19 15:25:19 | DEBUG | o.s.security.web.FilterChainProxy | Securing GET /api/flights?origin=&destination=&date=&airline=
+2025-10-19 15:25:19 | DEBUG | o.s.security.web.FilterChainProxy | Secured GET /api/flights?origin=&destination=&date=&airline=
+2025-10-19 15:25:19 | INFO  | c.a.config.RequestLoggingFilter | ➡️ GET /api/flights completado en 53 ms
+2025-10-19 15:25:19 | INFO  | c.a.config.PerformanceLoggingFilter | [0;32m➡️ GET /api/flights - 200 (60 ms)[0m
+2025-10-19 15:25:19 | DEBUG | o.s.security.web.FilterChainProxy | Securing GET /api/flights?origin=&destination=&date=&airline=
+2025-10-19 15:25:19 | DEBUG | o.s.security.web.FilterChainProxy | Secured GET /api/flights?origin=&destination=&date=&airline=
+2025-10-19 15:25:19 | INFO  | c.a.config.RequestLoggingFilter | ➡️ GET /api/flights completado en 48 ms
+2025-10-19 15:25:19 | INFO  | c.a.config.PerformanceLoggingFilter | [0;32m➡️ GET /api/flights - 200 (51 ms)[0m
+2025-10-19 15:25:42 | DEBUG | o.s.security.web.FilterChainProxy | Securing OPTIONS /api/reservations
+2025-10-19 15:25:42 | DEBUG | o.s.security.web.FilterChainProxy | Securing POST /api/reservations
+2025-10-19 15:25:42 | DEBUG | o.s.security.web.FilterChainProxy | Secured POST /api/reservations
+2025-10-19 15:25:44 | INFO  | c.a.config.RequestLoggingFilter | ➡️ POST /api/reservations completado en 1985 ms
+2025-10-19 15:25:44 | WARN  | c.a.config.PerformanceLoggingFilter | ⚠️ Petición lenta detectada: POST /api/reservations (1991 ms)
+2025-10-19 15:25:44 | DEBUG | o.s.security.web.FilterChainProxy | Securing OPTIONS /api/flights?origin=&destination=&date=&airline=
+2025-10-19 15:25:44 | DEBUG | o.s.security.web.FilterChainProxy | Securing GET /api/flights?origin=&destination=&date=&airline=
+2025-10-19 15:25:44 | DEBUG | o.s.security.web.FilterChainProxy | Secured GET /api/flights?origin=&destination=&date=&airline=
+2025-10-19 15:25:44 | INFO  | c.a.config.RequestLoggingFilter | ➡️ GET /api/flights completado en 16 ms
+2025-10-19 15:25:44 | INFO  | c.a.config.PerformanceLoggingFilter | [0;32m➡️ GET /api/flights - 200 (25 ms)[0m
+2025-10-19 15:25:53 | DEBUG | o.s.security.web.FilterChainProxy | Securing OPTIONS /api/reservations
+2025-10-19 15:25:53 | DEBUG | o.s.security.web.FilterChainProxy | Securing POST /api/reservations
+2025-10-19 15:25:53 | DEBUG | o.s.security.web.FilterChainProxy | Secured POST /api/reservations
+2025-10-19 15:25:54 | INFO  | c.a.config.RequestLoggingFilter | ➡️ POST /api/reservations completado en 307 ms
+2025-10-19 15:25:54 | INFO  | c.a.config.PerformanceLoggingFilter | [0;32m➡️ POST /api/reservations - 200 (310 ms)[0m
+2025-10-19 15:25:54 | DEBUG | o.s.security.web.FilterChainProxy | Securing OPTIONS /api/flights?origin=&destination=&date=&airline=
+2025-10-19 15:25:54 | DEBUG | o.s.security.web.FilterChainProxy | Securing GET /api/flights?origin=&destination=&date=&airline=
+2025-10-19 15:25:54 | DEBUG | o.s.security.web.FilterChainProxy | Secured GET /api/flights?origin=&destination=&date=&airline=
+2025-10-19 15:25:54 | INFO  | c.a.config.RequestLoggingFilter | ➡️ GET /api/flights completado en 17 ms
+2025-10-19 15:25:54 | INFO  | c.a.config.PerformanceLoggingFilter | [0;32m➡️ GET /api/flights - 200 (23 ms)[0m
+2025-10-19 15:25:59 | DEBUG | o.s.security.web.FilterChainProxy | Securing OPTIONS /api/reservations/my
+2025-10-19 15:25:59 | DEBUG | o.s.security.web.FilterChainProxy | Securing OPTIONS /api/reservations/my
+2025-10-19 15:25:59 | DEBUG | o.s.security.web.FilterChainProxy | Securing GET /api/reservations/my
+2025-10-19 15:25:59 | DEBUG | o.s.security.web.FilterChainProxy | Secured GET /api/reservations/my
+2025-10-19 15:25:59 | INFO  | c.a.config.RequestLoggingFilter | ➡️ GET /api/reservations/my completado en 87 ms
+2025-10-19 15:25:59 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/reservations/my - 500 (88 ms)[0m
+2025-10-19 15:25:59 | DEBUG | o.s.security.web.FilterChainProxy | Securing GET /api/reservations/my
+2025-10-19 15:26:00 | DEBUG | o.s.security.web.FilterChainProxy | Secured GET /api/reservations/my
+2025-10-19 15:26:00 | INFO  | c.a.config.RequestLoggingFilter | ➡️ GET /api/reservations/my completado en 19 ms
+2025-10-19 15:26:00 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/reservations/my - 500 (29 ms)[0m
+2025-10-19 15:26:07 | DEBUG | o.s.security.web.FilterChainProxy | Securing OPTIONS /api/flights?origin=&destination=&date=&airline=
+2025-10-19 15:26:07 | DEBUG | o.s.security.web.FilterChainProxy | Securing OPTIONS /api/flights?origin=&destination=&date=&airline=
+2025-10-19 15:26:07 | DEBUG | o.s.security.web.FilterChainProxy | Securing GET /api/flights?origin=&destination=&date=&airline=
+2025-10-19 15:26:07 | DEBUG | o.s.security.web.FilterChainProxy | Secured GET /api/flights?origin=&destination=&date=&airline=
+2025-10-19 15:26:07 | INFO  | c.a.config.RequestLoggingFilter | ➡️ GET /api/flights completado en 15 ms
+2025-10-19 15:26:07 | INFO  | c.a.config.PerformanceLoggingFilter | [0;32m➡️ GET /api/flights - 200 (18 ms)[0m
+2025-10-19 15:26:07 | DEBUG | o.s.security.web.FilterChainProxy | Securing GET /api/flights?origin=&destination=&date=&airline=
+2025-10-19 15:26:07 | DEBUG | o.s.security.web.FilterChainProxy | Secured GET /api/flights?origin=&destination=&date=&airline=
+2025-10-19 15:26:07 | INFO  | c.a.config.RequestLoggingFilter | ➡️ GET /api/flights completado en 40 ms
+2025-10-19 15:26:08 | INFO  | c.a.config.PerformanceLoggingFilter | [0;32m➡️ GET /api/flights - 200 (53 ms)[0m
+2025-10-19 15:28:32 | INFO  | o.s.o.j.LocalContainerEntityManagerFactoryBean | Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-19 15:28:32 | INFO  | com.zaxxer.hikari.HikariDataSource | HikariPool-1 - Shutdown initiated...
+2025-10-19 15:28:32 | INFO  | com.zaxxer.hikari.HikariDataSource | HikariPool-1 - Shutdown completed.

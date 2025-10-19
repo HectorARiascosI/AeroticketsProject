@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
-import api, { ENDPOINTS } from "@/api/api";
+import api from "@/api/client";
+import { ENDPOINTS } from "@/api/endpoints";
+import { storage } from "@/utils/storage";
 import toast from "react-hot-toast";
 
-type User = {
+export type User = {
   id?: number;
   fullName?: string;
   email: string;
@@ -24,11 +26,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const cachedUser = localStorage.getItem("user");
-      if (cachedUser) setUser(JSON.parse(cachedUser));
-    }
+    const cached = storage.getUser<User>();
+    if (storage.getToken() && cached) setUser(cached);
     setLoading(false);
   }, []);
 
@@ -43,15 +42,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     const { data } = await api.post(ENDPOINTS.AUTH.LOGIN, { email, password });
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
-    setUser(data.user);
+    if (!data?.token) throw new Error("Backend no devolvió token");
+    storage.setToken(data.token);
+    storage.setUser(data.user ?? { email });
+    setUser(data.user ?? { email });
     toast.success("Bienvenido/a");
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    storage.clearAll();
     setUser(null);
     toast("Sesión cerrada");
   };
