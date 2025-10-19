@@ -1,12 +1,6 @@
-import api from "./api";
-import type { Flight } from "../types";
+import http from "./http";
 
-export const getAllFlights = async (): Promise<Flight[]> => {
-  const res = await api.get<Flight[]>("/flights");
-  return res.data;
-};
-
-export const createFlight = async (payload: Partial<Flight>) : Promise<Flight> => {
-  const res = await api.post<Flight>("/flights", payload);
-  return res.data;
+export const listFlights = async () => {
+  const { data } = await http.get("/api/flights");
+  return data;
 };

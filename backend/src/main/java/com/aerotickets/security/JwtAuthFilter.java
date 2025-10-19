@@ -1,7 +1,9 @@
 package com.aerotickets.security;
 
-import com.aerotickets.service.JwtService;
 import com.aerotickets.service.CustomUserDetailsService;
+import com.aerotickets.service.JwtService;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,8 +28,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
-                                    FilterChain chain)
-            throws ServletException, IOException {
+                                    FilterChain chain) throws ServletException, IOException {
 
         final String authHeader = request.getHeader("Authorization");
 
@@ -37,27 +38,36 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         final String token = authHeader.substring(7);
-        String email = null;
+        String userEmail = null;
 
         try {
-            email = jwtService.extractUsername(token);
-        } catch (Exception e) {
-            log.warn("JWT inválido en {}: {}", request.getRequestURI(), e.getMessage());
-            chain.doFilter(request, response);
+            userEmail = jwtService.extractUsername(token);
+        } catch (ExpiredJwtException ex) {
+            log.warn("JWT expirado: {}", ex.getMessage());
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        } catch (SignatureException ex) {
+            log.warn("Firma JWT inválida: {}", ex.getMessage());
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        } catch (Exception ex) {
+            log.warn("Error parseando JWT: {}", ex.getMessage());
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-            if (jwtService.isTokenValid(token, userDetails)) {
-                var authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities()
+        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails user = userDetailsService.loadUserByUsername(userEmail);
+
+            if (jwtService.isTokenValid(token, user)) {
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        user, null, user.getAuthorities()
                 );
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-                log.debug("Autenticado por JWT: {}", email);
             } else {
-                log.warn("JWT no válido o expirado para {}", email);
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
             }
         }
 

@@ -36,7 +36,7 @@ public class ReservationService {
         Flight flight = flightRepository.findById(dto.getFlightId())
                 .orElseThrow(() -> new IllegalArgumentException("Vuelo no encontrado"));
 
-        long ocupados = reservationRepository.countByFlightIdAndStatus(flight.getId(), ReservationStatus.ACTIVE);
+        long ocupados = reservationRepository.countByFlight_IdAndStatus(flight.getId(), ReservationStatus.ACTIVE);
         if (ocupados >= flight.getTotalSeats()) {
             throw new IllegalStateException("No hay cupos disponibles para este vuelo");
         }
@@ -45,7 +45,7 @@ public class ReservationService {
             if (dto.getSeatNumber() < 1 || dto.getSeatNumber() > flight.getTotalSeats()) {
                 throw new IllegalArgumentException("Número de asiento fuera de rango");
             }
-            if (reservationRepository.existsByFlightIdAndSeatNumberAndStatus(
+            if (reservationRepository.existsByFlight_IdAndSeatNumberAndStatus(
                     flight.getId(), dto.getSeatNumber(), ReservationStatus.ACTIVE)) {
                 throw new IllegalStateException("Ese asiento ya fue reservado");
             }
@@ -66,13 +66,13 @@ public class ReservationService {
     }
 
     public List<ReservationResponseDTO> listMine(String userEmail) {
-        return reservationRepository.findByUserEmailOrderByCreatedAtDesc(userEmail)
+        return reservationRepository.findByUser_EmailOrderByCreatedAtDesc(userEmail)
                 .stream().map(this::toDto).collect(Collectors.toList());
     }
 
     @Transactional
     public void cancel(String userEmail, Long reservationId) {
-        Reservation r = reservationRepository.findByIdAndUserEmail(reservationId, userEmail)
+        Reservation r = reservationRepository.findByIdAndUser_Email(reservationId, userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada"));
         if (r.getStatus() == ReservationStatus.CANCELLED) return;
         r.setStatus(ReservationStatus.CANCELLED);

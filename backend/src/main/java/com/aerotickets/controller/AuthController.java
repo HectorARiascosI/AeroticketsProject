@@ -14,9 +14,7 @@ public class AuthController {
 
   private final AuthService authService;
 
-  public AuthController(AuthService authService) {
-    this.authService = authService;
-  }
+  public AuthController(AuthService authService) { this.authService = authService; }
 
   @PostMapping("/register")
   public ResponseEntity<AuthResponseDTO> register(@Valid @RequestBody UserRegistrationDTO dto) {
@@ -29,8 +27,7 @@ public class AuthController {
   }
 
   @GetMapping("/me")
-  public ResponseEntity<?> me(@RequestHeader("Authorization") String authHeader) {
-    // Este endpoint es de prueba; en Fase 2 leeremos el user de SecurityContext
+  public ResponseEntity<?> me() {
     return ResponseEntity.ok().build();
   }
 }

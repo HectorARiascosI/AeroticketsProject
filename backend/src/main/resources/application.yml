@@ -1,87 +1,39 @@
-flightService.ts
-reservationService.ts
-env.mjs
-axios.js?v=a4954e0b
-chunk-F5X6INBZ.js?v=a4954e0b
-?token=Z021WpA4f_rQ
-vite.svg
-flights
-flights
-flights
-flights
-33 requests
-4.4 kB transferred
-2.1 MB resources
-Finish: 2.86 s
-DOMContentLoaded: 1.75 s
-Request URL
-http://localhost:8080/api/flights
-Request Method
-GET
-Status Code
-403 Forbidden
-Remote Address
-[::1]:8080
-Referrer Policy
-strict-origin-when-cross-origin
-access-control-allow-credentials
-true
-access-control-allow-origin
-http://localhost:5173
-cache-control
-no-cache, no-store, max-age=0, must-revalidate
-connection
-keep-alive
-content-length
-0
-date
-Wed, 15 Oct 2025 10:05:19 GMT
-expires
-0
-keep-alive
-timeout=60
-pragma
-no-cache
-vary
-Origin
-vary
-Access-Control-Request-Method
-vary
-Access-Control-Request-Headers
-x-content-type-options
-nosniff
-x-frame-options
-DENY
-x-xss-protection
-0
-accept
-application/json, text/plain, */*
-accept-encoding
-gzip, deflate, br, zstd
-accept-language
-es-CO,es-ES;q=0.9,es-419;q=0.8,es;q=0.7,en;q=0.6
-authorization
-Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtaWxlbmFpbnN1QGdtYWlsLmNvbSIsImlhdCI6MTc2MDUyMTg4NywiZXhwIjoxNzYwNTI5MDg3fQ.6QFD45eaSvypdyhIzophUQPiWs3Mn3a_dTlipCKGDiY
-connection
-keep-alive
-host
-localhost:8080
-origin
-http://localhost:5173
-referer
-http://localhost:5173/
-sec-ch-ua
-"Google Chrome";v="141", "Not?A_Brand";v="8", "Chromium";v="141"
-sec-ch-ua-mobile
-?0
-sec-ch-ua-platform
-"Windows"
-sec-fetch-dest
-empty
-sec-fetch-mode
-cors
-sec-fetch-site
-same-site
-user-agent
-Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36
-﻿
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/aerotickets?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: root
+    password: nomeselacontra
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  flyway:
+    enabled: false
+
+# === LOGGING CORPORATIVO ===
+logging:
+  file:
+    name: logs/aerotickets.log
+  level:
+    root: INFO
+    com.aerotickets: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: WARN
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss}){faint} | %clr(%-5level){cyan} | %clr(%logger{36}){blue} | %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} | %-5level | %logger{36} | %msg%n"
+
+vueler:
+  jwt:
+    secret: "746B436D49794C75526A536B56566E586B48756A4E5442304E43755963615674"
+    expiration-minutes: 120

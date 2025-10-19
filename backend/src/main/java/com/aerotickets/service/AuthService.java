@@ -8,7 +8,6 @@ import com.aerotickets.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.User.UserBuilder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +19,8 @@ public class AuthService {
     private final AuthenticationManager authManager;
     private final JwtService jwtService;
 
-    public AuthService(UserRepository userRepository,
-                       PasswordEncoder encoder,
-                       AuthenticationManager authManager,
-                       JwtService jwtService) {
+    public AuthService(UserRepository userRepository, PasswordEncoder encoder,
+                       AuthenticationManager authManager, JwtService jwtService) {
         this.userRepository = userRepository;
         this.encoder = encoder;
         this.authManager = authManager;
@@ -35,20 +32,21 @@ public class AuthService {
         if (userRepository.existsByEmail(dto.getEmail())) {
             throw new IllegalArgumentException("El correo ya está registrado");
         }
-
         User u = new User();
         u.setFullName(dto.getFullName());
         u.setEmail(dto.getEmail());
         u.setPasswordHash(encoder.encode(dto.getPassword()));
-        u.setRole("USER");
+        u.setRole("USER"); // por defecto
+
         userRepository.save(u);
 
-        UserBuilder ub = org.springframework.security.core.userdetails.User.builder()
-                .username(u.getEmail())
+        var ud = org.springframework.security.core.userdetails.User
+                .withUsername(u.getEmail())
                 .password(u.getPasswordHash())
-                .roles("USER");
+                .roles("USER")
+                .build();
 
-        String token = jwtService.generateToken(ub.build());
+        String token = jwtService.generateToken(ud);
         return new AuthResponseDTO(token, u.getFullName(), u.getEmail());
     }
 
@@ -56,14 +54,15 @@ public class AuthService {
         var auth = new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword());
         authManager.authenticate(auth);
 
-        var u = userRepository.findByEmail(dto.getEmail()).orElseThrow();
+        var user = userRepository.findByEmail(dto.getEmail()).orElseThrow();
 
-        UserBuilder ub = org.springframework.security.core.userdetails.User.builder()
-                .username(u.getEmail())
-                .password(u.getPasswordHash())
-                .roles(u.getRole() != null ? u.getRole() : "USER");
+        var ud = org.springframework.security.core.userdetails.User
+                .withUsername(user.getEmail())
+                .password(user.getPasswordHash())
+                .roles((user.getRole() == null || user.getRole().isBlank()) ? "USER" : user.getRole())
+                .build();
 
-        String token = jwtService.generateToken(ub.build());
-        return new AuthResponseDTO(token, u.getFullName(), u.getEmail());
+        String token = jwtService.generateToken(ud);
+        return new AuthResponseDTO(token, user.getFullName(), user.getEmail());
     }
 }
