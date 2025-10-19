@@ -27,8 +27,9 @@ logging:
   level:
     root: INFO
     com.aerotickets: DEBUG
-    org.springframework.web: INFO
-    org.hibernate.SQL: WARN
+    org.springframework.security: DEBUG   # 👈 ver autenticación
+    org.springframework.web: DEBUG        # 👈 ver peticiones HTTP
+    org.hibernate.SQL: DEBUG              # 👈 ver consultas SQL
   pattern:
     console: "%clr(%d{yyyy-MM-dd HH:mm:ss}){faint} | %clr(%-5level){cyan} | %clr(%logger{36}){blue} | %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} | %-5level | %logger{36} | %msg%n"

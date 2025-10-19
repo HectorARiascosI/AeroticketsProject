@@ -1,21 +1,21 @@
-import {
+import React, {
   createContext,
   useContext,
   useEffect,
   useMemo,
   useState,
-  ReactNode,
 } from "react";
-import api, { ENDPOINTS } from "@/api/api";
+import api from "@/api/api";
 import toast from "react-hot-toast";
 
 type User = {
-  id: number;
-  username: string;
+  id?: number;
+  fullName?: string;
   email: string;
+  role?: string;
 };
 
-type AuthCtx = {
+type AuthContextType = {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -27,65 +27,49 @@ type AuthCtx = {
   logout: () => void;
 };
 
-const AuthContext = createContext<AuthCtx | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  /** 🧠 Cargar sesión al iniciar */
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const cachedUser = localStorage.getItem("user");
-    if (token && cachedUser) {
-      setUser(JSON.parse(cachedUser));
+    if (token) {
+      const cachedUser = localStorage.getItem("user");
+      if (cachedUser) setUser(JSON.parse(cachedUser));
     }
     setLoading(false);
   }, []);
 
-  /** 🔐 Iniciar sesión */
-  const login = async (email: string, password: string) => {
-    try {
-      const { data } = await api.post(ENDPOINTS.AUTH.LOGIN, {
-        email,
-        password,
-      });
-
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      setUser(data.user);
-
-      toast.success(`Bienvenido, ${data.user.username}`);
-    } catch (err: any) {
-      const msg =
-        err.response?.data?.message ||
-        "Credenciales inválidas o error de conexión.";
-      toast.error(msg);
-    }
-  };
-
-  /** 🧾 Registrar usuario */
   const register = async (payload: {
     username: string;
     email: string;
     password: string;
   }) => {
-    try {
-      await api.post(ENDPOINTS.AUTH.REGISTER, payload);
-      toast.success("Cuenta creada. Ahora inicia sesión.");
-    } catch (err: any) {
-      const msg =
-        err.response?.data?.message || "No fue posible crear la cuenta.";
-      toast.error(msg);
-    }
+    await api.post(ENDPOINTS.AUTH.REGISTER, {
+      fullName: payload.username,
+      email: payload.email,
+      password: payload.password,
+    });
+    toast.success("Registro exitoso. Ahora inicia sesión.");
   };
 
-  /** 🚪 Cerrar sesión */
+  const login = async (email: string, password: string) => {
+    const { data } = await api.post(ENDPOINTS.AUTH.LOGIN, { email, password });
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+    setUser(data.user);
+    toast.success("Bienvenido/a");
+  };
+
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);
-    toast("Sesión cerrada correctamente");
+    toast("Sesión cerrada");
   };
 
   const value = useMemo(
@@ -98,10 +82,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       {!loading && children}
     </AuthContext.Provider>
   );
-}
+};
 
+// 👇 Exportación necesaria para Navbar, páginas, etc.
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth debe usarse dentro de AuthProvider");
+  if (!ctx) throw new Error("useAuth debe usarse dentro de un AuthProvider");
   return ctx;
 };

@@ -1,33 +1,61 @@
 package com.aerotickets.controller;
 
-import com.aerotickets.dto.AuthResponseDTO;
-import com.aerotickets.dto.LoginRequestDTO;
-import com.aerotickets.dto.UserRegistrationDTO;
-import com.aerotickets.service.AuthService;
+import com.aerotickets.entity.User;
+import com.aerotickets.repository.UserRepository;
+import com.aerotickets.security.JwtService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import com.aerotickets.model.AuthResponse;
+import com.aerotickets.model.LoginRequest;
+import com.aerotickets.model.RegisterRequest;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = "http://localhost:5173")
 public class AuthController {
 
-  private final AuthService authService;
+    @Autowired private AuthenticationManager authManager;
+    @Autowired private PasswordEncoder passwordEncoder;
+    @Autowired private UserRepository userRepository;
+    @Autowired private JwtService jwtService;
 
-  public AuthController(AuthService authService) { this.authService = authService; }
+    // ✅ Registro de usuario
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest req) {
+        if (userRepository.findByEmail(req.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest().body("El correo ya está registrado.");
+        }
 
-  @PostMapping("/register")
-  public ResponseEntity<AuthResponseDTO> register(@Valid @RequestBody UserRegistrationDTO dto) {
-    return ResponseEntity.ok(authService.register(dto));
-  }
+        User user = new User();
+        user.setFullName(req.getFullName());
+        user.setEmail(req.getEmail());
+        user.setPasswordHash(passwordEncoder.encode(req.getPassword()));
+        userRepository.save(user);
 
-  @PostMapping("/login")
-  public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginRequestDTO dto) {
-    return ResponseEntity.ok(authService.login(dto));
-  }
+        return ResponseEntity.ok("Usuario registrado exitosamente");
+    }
 
-  @GetMapping("/me")
-  public ResponseEntity<?> me() {
-    return ResponseEntity.ok().build();
-  }
+    // ✅ Inicio de sesión
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest req) {
+        authManager.authenticate(
+            new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword())
+        );
+
+        Optional<User> userOpt = userRepository.findByEmail(req.getEmail());
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(401).body("Usuario no encontrado.");
+        }
+
+        User user = userOpt.get();
+        String token = jwtService.generateToken(user);
+
+        return ResponseEntity.ok(new AuthResponse(token, user));
+    }
 }

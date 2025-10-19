@@ -2,14 +2,14 @@ import axios from "axios";
 
 /**
  * Cliente Axios centralizado para todas las peticiones al backend.
- * Ajusta automáticamente la URL base según el entorno.
+ * Se conecta a la API local de Spring Boot.
  */
 const api = axios.create({
-  baseURL: "http://localhost:8080/api", // 👈 el backend corre aquí
+  baseURL: "http://localhost:8080", // ❌ sin /api, para evitar duplicados
   headers: { "Content-Type": "application/json" },
 });
 
-// 🔐 Interceptor para agregar el token JWT si existe
+// 🔐 Agrega token JWT automáticamente
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) config.headers.Authorization = `Bearer ${token}`;
@@ -21,9 +21,9 @@ export default api;
 // Endpoints centralizados
 export const ENDPOINTS = {
   AUTH: {
-    LOGIN: "/auth/login",
-    REGISTER: "/auth/register",
-    PROFILE: "/auth/me",
+    LOGIN: "/api/auth/login",
+    REGISTER: "/api/auth/register",
+    PROFILE: "/api/auth/me",
   },
-  FLIGHTS: "/flights",
+  FLIGHTS: "/api/flights",
 };

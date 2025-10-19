@@ -167,3 +167,104 @@
 2025-10-19 09:30:29 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ POST /api/auth/login - 500 (2911 ms)[0m
 2025-10-19 09:30:57 | INFO  | c.a.config.RequestLoggingFilter | ➡️ POST /api/auth/register completado en 257 ms
 2025-10-19 09:30:57 | WARN  | c.a.config.PerformanceLoggingFilter | [0;33m➡️ POST /api/auth/register - 422 (267 ms)[0m
+2025-10-19 10:24:18 | INFO  | o.h.validator.internal.util.Version | HV000001: Hibernate Validator 8.0.1.Final
+2025-10-19 10:24:19 | INFO  | com.aerotickets.App | Starting App using Java 21.0.8 with PID 11256 (C:\Users\Familia\Desktop\AeroticketsProject\backend\target\classes started by Familia in C:\Users\Familia\Desktop\AeroticketsProject\backend)
+2025-10-19 10:24:19 | DEBUG | com.aerotickets.App | Running with Spring Boot v3.3.2, Spring v6.1.11
+2025-10-19 10:24:19 | INFO  | com.aerotickets.App | No active profile set, falling back to 1 default profile: "default"
+2025-10-19 10:24:20 | WARN  | o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext | Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanDefinitionStoreException: Failed to parse configuration class [com.aerotickets.App]
+2025-10-19 10:24:22 | ERROR | o.s.boot.SpringApplication | Application run failed
+org.springframework.beans.factory.BeanDefinitionStoreException: Failed to parse configuration class [com.aerotickets.App]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:179)
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:417)
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:290)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:349)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:118)
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:789)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:607)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352)
+	at com.aerotickets.App.main(App.java:26)
+Caused by: org.springframework.context.annotation.ConflictingBeanDefinitionException: Annotation-specified bean name 'jwtService' for bean class [com.aerotickets.service.JwtService] conflicts with existing, non-compatible bean definition of same name and class [com.aerotickets.security.JwtService]
+	at org.springframework.context.annotation.ClassPathBeanDefinitionScanner.checkCandidate(ClassPathBeanDefinitionScanner.java:361)
+	at org.springframework.context.annotation.ClassPathBeanDefinitionScanner.doScan(ClassPathBeanDefinitionScanner.java:288)
+	at org.springframework.context.annotation.ComponentScanAnnotationParser.parse(ComponentScanAnnotationParser.java:128)
+	at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:306)
+	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:246)
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:197)
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:165)
+	... 13 common frames omitted
+2025-10-19 10:36:48 | INFO  | o.h.validator.internal.util.Version | HV000001: Hibernate Validator 8.0.1.Final
+2025-10-19 10:36:48 | INFO  | com.aerotickets.App | Starting App using Java 21.0.8 with PID 1020 (C:\Users\Familia\Desktop\AeroticketsProject\backend\target\classes started by Familia in C:\Users\Familia\Desktop\AeroticketsProject\backend)
+2025-10-19 10:36:48 | DEBUG | com.aerotickets.App | Running with Spring Boot v3.3.2, Spring v6.1.11
+2025-10-19 10:36:48 | INFO  | com.aerotickets.App | No active profile set, falling back to 1 default profile: "default"
+2025-10-19 10:36:54 | INFO  | o.s.d.r.c.RepositoryConfigurationDelegate | Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-19 10:36:54 | INFO  | o.s.d.r.c.RepositoryConfigurationDelegate | Finished Spring Data repository scanning in 331 ms. Found 3 JPA repository interfaces.
+2025-10-19 10:36:57 | INFO  | o.s.b.w.e.tomcat.TomcatWebServer | Tomcat initialized with port 8080 (http)
+2025-10-19 10:36:57 | INFO  | o.a.coyote.http11.Http11NioProtocol | Initializing ProtocolHandler ["http-nio-8080"]
+2025-10-19 10:36:57 | INFO  | o.a.catalina.core.StandardService | Starting service [Tomcat]
+2025-10-19 10:36:57 | INFO  | o.a.catalina.core.StandardEngine | Starting Servlet engine: [Apache Tomcat/10.1.26]
+2025-10-19 10:36:58 | INFO  | o.a.c.c.C.[Tomcat].[localhost].[/] | Initializing Spring embedded WebApplicationContext
+2025-10-19 10:36:58 | INFO  | o.s.b.w.s.c.ServletWebServerApplicationContext | Root WebApplicationContext: initialization completed in 9033 ms
+2025-10-19 10:36:58 | INFO  | o.h.jpa.internal.util.LogHelper | HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-19 10:36:58 | INFO  | org.hibernate.Version | HHH000412: Hibernate ORM core version 6.5.2.Final
+2025-10-19 10:36:59 | INFO  | o.h.c.i.RegionFactoryInitiator | HHH000026: Second-level cache disabled
+2025-10-19 10:37:00 | INFO  | o.s.o.j.p.SpringPersistenceUnitInfo | No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-19 10:37:00 | INFO  | com.zaxxer.hikari.HikariDataSource | HikariPool-1 - Starting...
+2025-10-19 10:37:02 | INFO  | com.zaxxer.hikari.pool.HikariPool | HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@709d6de5
+2025-10-19 10:37:02 | INFO  | com.zaxxer.hikari.HikariDataSource | HikariPool-1 - Start completed.
+2025-10-19 10:37:07 | INFO  | o.h.e.t.j.p.i.JtaPlatformInitiator | HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-19 10:37:14 | INFO  | o.s.o.j.LocalContainerEntityManagerFactoryBean | Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-19 10:37:15 | DEBUG | c.aerotickets.security.JwtAuthFilter | Filter 'jwtAuthFilter' configured for use
+2025-10-19 10:37:15 | INFO  | o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer | Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2025-10-19 10:37:19 | INFO  | o.a.coyote.http11.Http11NioProtocol | Starting ProtocolHandler ["http-nio-8080"]
+2025-10-19 10:37:19 | INFO  | o.s.b.w.e.tomcat.TomcatWebServer | Tomcat started on port 8080 (http) with context path '/'
+2025-10-19 10:37:20 | INFO  | com.aerotickets.App | Started App in 36.205 seconds (process running for 40.849)
+2025-10-19 10:43:57 | INFO  | o.s.o.j.LocalContainerEntityManagerFactoryBean | Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-19 10:43:57 | INFO  | com.zaxxer.hikari.HikariDataSource | HikariPool-1 - Shutdown initiated...
+2025-10-19 10:43:57 | INFO  | com.zaxxer.hikari.HikariDataSource | HikariPool-1 - Shutdown completed.
+2025-10-19 11:03:00 | INFO  | o.h.validator.internal.util.Version | HV000001: Hibernate Validator 8.0.1.Final
+2025-10-19 11:03:00 | INFO  | com.aerotickets.App | Starting App using Java 21.0.8 with PID 2780 (C:\Users\Familia\Desktop\AeroticketsProject\backend\target\classes started by Familia in C:\Users\Familia\Desktop\AeroticketsProject\backend)
+2025-10-19 11:03:00 | DEBUG | com.aerotickets.App | Running with Spring Boot v3.3.2, Spring v6.1.11
+2025-10-19 11:03:00 | INFO  | com.aerotickets.App | No active profile set, falling back to 1 default profile: "default"
+2025-10-19 11:03:11 | INFO  | o.s.d.r.c.RepositoryConfigurationDelegate | Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-19 11:03:12 | INFO  | o.s.d.r.c.RepositoryConfigurationDelegate | Finished Spring Data repository scanning in 737 ms. Found 3 JPA repository interfaces.
+2025-10-19 11:03:16 | INFO  | o.s.b.w.e.tomcat.TomcatWebServer | Tomcat initialized with port 8080 (http)
+2025-10-19 11:03:16 | INFO  | o.a.coyote.http11.Http11NioProtocol | Initializing ProtocolHandler ["http-nio-8080"]
+2025-10-19 11:03:16 | INFO  | o.a.catalina.core.StandardService | Starting service [Tomcat]
+2025-10-19 11:03:16 | INFO  | o.a.catalina.core.StandardEngine | Starting Servlet engine: [Apache Tomcat/10.1.26]
+2025-10-19 11:03:16 | INFO  | o.a.c.c.C.[Tomcat].[localhost].[/] | Initializing Spring embedded WebApplicationContext
+2025-10-19 11:03:16 | INFO  | o.s.b.w.s.c.ServletWebServerApplicationContext | Root WebApplicationContext: initialization completed in 15337 ms
+2025-10-19 11:03:17 | INFO  | o.h.jpa.internal.util.LogHelper | HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-19 11:03:17 | INFO  | org.hibernate.Version | HHH000412: Hibernate ORM core version 6.5.2.Final
+2025-10-19 11:03:18 | INFO  | o.h.c.i.RegionFactoryInitiator | HHH000026: Second-level cache disabled
+2025-10-19 11:03:19 | INFO  | o.s.o.j.p.SpringPersistenceUnitInfo | No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-19 11:03:19 | INFO  | com.zaxxer.hikari.HikariDataSource | HikariPool-1 - Starting...
+2025-10-19 11:03:21 | INFO  | com.zaxxer.hikari.pool.HikariPool | HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3fd33f48
+2025-10-19 11:03:21 | INFO  | com.zaxxer.hikari.HikariDataSource | HikariPool-1 - Start completed.
+2025-10-19 11:03:25 | INFO  | o.h.e.t.j.p.i.JtaPlatformInitiator | HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-19 11:03:25 | DEBUG | org.hibernate.SQL | 
+    alter table reservations 
+       modify column status enum ('ACTIVE','CANCELLED') not null
+2025-10-19 11:03:28 | INFO  | o.s.o.j.LocalContainerEntityManagerFactoryBean | Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-19 11:03:29 | DEBUG | c.aerotickets.security.JwtAuthFilter | Filter 'jwtAuthFilter' configured for use
+2025-10-19 11:03:29 | INFO  | o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer | Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2025-10-19 11:03:31 | DEBUG | o.s.w.s.m.m.a.RequestMappingHandlerMapping | 15 mappings in 'requestMappingHandlerMapping'
+2025-10-19 11:03:31 | DEBUG | o.s.w.s.h.SimpleUrlHandlerMapping | Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-10-19 11:03:31 | DEBUG | o.s.s.web.DefaultSecurityFilterChain | Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtAuthFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-10-19 11:03:32 | DEBUG | o.s.w.s.m.m.a.RequestMappingHandlerAdapter | ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-10-19 11:03:32 | DEBUG | o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver | ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-10-19 11:03:33 | INFO  | o.a.coyote.http11.Http11NioProtocol | Starting ProtocolHandler ["http-nio-8080"]
+2025-10-19 11:03:33 | INFO  | o.s.b.w.e.tomcat.TomcatWebServer | Tomcat started on port 8080 (http) with context path '/'
+2025-10-19 11:03:33 | INFO  | com.aerotickets.App | Started App in 41.748 seconds (process running for 48.511)
+2025-10-19 11:03:34 | DEBUG | org.hibernate.SQL | 
+    select
+        count(*) 
+    from
+        flights f1_0
+2025-10-19 11:11:14 | INFO  | o.s.o.j.LocalContainerEntityManagerFactoryBean | Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-19 11:11:14 | INFO  | com.zaxxer.hikari.HikariDataSource | HikariPool-1 - Shutdown initiated...
+2025-10-19 11:11:14 | INFO  | com.zaxxer.hikari.HikariDataSource | HikariPool-1 - Shutdown completed.

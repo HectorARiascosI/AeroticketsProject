@@ -1,7 +1,6 @@
 package com.aerotickets.security;
 
-import com.aerotickets.service.CustomUserDetailsService;
-import com.aerotickets.service.JwtService;
+import com.aerotickets.entity.User;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
@@ -23,7 +22,7 @@ import java.io.IOException;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Autowired private JwtService jwtService;
-    @Autowired private CustomUserDetailsService userDetailsService;
+    @Autowired private CustomUserDetailsService userDetailsService; // asegúrate de tenerla en el paquete security
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -41,7 +40,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String userEmail = null;
 
         try {
-            userEmail = jwtService.extractUsername(token);
+            userEmail = jwtService.extractEmail(token);
         } catch (ExpiredJwtException ex) {
             log.warn("JWT expirado: {}", ex.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -59,10 +58,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails user = userDetailsService.loadUserByUsername(userEmail);
 
-            if (jwtService.isTokenValid(token, user)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        user, null, user.getAuthorities()
-                );
+            if (jwtService.validateToken(token, (User) user)) {
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             } else {
