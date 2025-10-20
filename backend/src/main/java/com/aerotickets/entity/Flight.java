@@ -1,5 +1,6 @@
 package com.aerotickets.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Flight {
 
     @Id
@@ -23,10 +25,10 @@ public class Flight {
     private String airline;
 
     @Column(nullable = false)
-    private String origin; // e.g., BOG
+    private String origin;
 
     @Column(nullable = false)
-    private String destination; // e.g., MDE
+    private String destination;
 
     @Column(nullable = false)
     private LocalDateTime departureAt;

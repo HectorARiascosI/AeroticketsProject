@@ -61,10 +61,12 @@ public class ReservationService {
             Reservation saved = reservationRepository.save(r);
             return toDto(saved);
         } catch (DataIntegrityViolationException ex) {
-            throw new IllegalStateException("Conflicto de reserva: intenta con otro asiento");
+            // Cuando el usuario ya tiene una reserva activa en ese vuelo
+            throw new IllegalStateException("Ya tienes una reserva activa en este vuelo");
         }
     }
 
+    @Transactional(Transactional.TxType.SUPPORTS)
     public List<ReservationResponseDTO> listMine(String userEmail) {
         return reservationRepository.findByUser_EmailOrderByCreatedAtDesc(userEmail)
                 .stream().map(this::toDto).collect(Collectors.toList());

@@ -1,14 +1,11 @@
 export const ENDPOINTS = {
   AUTH: {
-    LOGIN: "/auth/login",
-    REGISTER: "/auth/register",
-    FORGOT: "/auth/forgot-password",
-    RESET: "/auth/reset-password",
-    PROFILE: "/auth/me",
+    LOGIN: '/auth/login',
+    REGISTER: '/auth/register',
   },
-  FLIGHTS: "/flights",
+  FLIGHTS: '/flights',
   RESERVATIONS: {
-    BASE: "/reservations",
-    MINE: "/reservations/my",
+    BASE: '/reservations',
+    MINE: '/reservations/my',
   },
 } as const;

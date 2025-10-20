@@ -1,16 +1,25 @@
 export type Flight = {
   id: number;
+  airline: string;
   origin: string;
   destination: string;
-  departureTime: string;
-  arrivalTime: string;
+  departureAt: string;   // ISO
+  arriveAt: string;      // ISO
+  totalSeats: number;
   price: number;
-  airline: string;
 };
 
-export type Reservation = {
+export type ReservationDTO = {
   id: number;
-  status: "ACTIVE" | "CANCELLED";
-  flight: Flight;
-  createdAt?: string;
+  seatNumber?: number | null;
+  status: 'ACTIVE' | 'CANCELLED';
+  createdAt: string; // ISO
+
+  flightId: number;
+  airline: string;
+  origin: string;
+  destination: string;
+  departureAt: string;   // ISO
+  arriveAt: string;      // ISO
+  price: number;
 };

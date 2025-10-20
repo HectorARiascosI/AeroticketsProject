@@ -1,5 +1,12 @@
-export const formatCurrency = (value: number, currency = 'COP') =>
-  new Intl.NumberFormat('es-CO', { style: 'currency', currency }).format(value)
+export function formatDateTime(iso: string) {
+  try {
+    const d = new Date(iso);
+    return d.toLocaleString();
+  } catch {
+    return iso;
+  }
+}
 
-export const formatDateTime = (iso: string) =>
-  new Date(iso).toLocaleString('es-CO', { dateStyle: 'medium', timeStyle: 'short' })
+export function formatCurrency(value: number) {
+  return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(value);
+}
