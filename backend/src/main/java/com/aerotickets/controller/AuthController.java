@@ -12,10 +12,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controlador para registro y autenticación de usuarios.
+ * Proporciona endpoints públicos:
+ *  - POST /api/auth/register
+ *  - POST /api/auth/login
+ */
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
@@ -27,6 +32,9 @@ public class AuthController {
     private final UserRepository userRepository;
     private final JwtService jwtService;
 
+    /**
+     * Registro de un nuevo usuario.
+     */
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest req) {
         if (userRepository.findByEmail(req.getEmail()).isPresent()) {
@@ -42,9 +50,13 @@ public class AuthController {
         return ResponseEntity.ok("Usuario registrado exitosamente");
     }
 
+    /**
+     * Inicio de sesión con generación de JWT.
+     */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest req) {
-        Authentication auth = authManager.authenticate(
+        // Autenticar credenciales del usuario
+        authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword())
         );
 

@@ -1,15 +1,9 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import api from "@/api/client";
 import { ENDPOINTS } from "@/api/endpoints";
-import { storage } from "@/utils/storage";
 import toast from "react-hot-toast";
 
-export type User = {
-  id?: number;
-  fullName?: string;
-  email: string;
-  role?: string;
-};
+export type User = { id?: number; fullName?: string; email: string; role?: string };
 
 type AuthContextType = {
   user: User | null;
@@ -26,10 +20,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const cached = storage.getUser<User>();
-    if (storage.getToken() && cached) setUser(cached);
-    setLoading(false);
-  }, []);
+    const token = localStorage.getItem("token")
+    const u = localStorage.getItem("user")
+    if (token && u) setUser(JSON.parse(u))
+    setLoading(false)
+  }, [])
 
   const register = async (payload: { username: string; email: string; password: string }) => {
     await api.post(ENDPOINTS.AUTH.REGISTER, {
@@ -43,16 +38,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string) => {
     const { data } = await api.post(ENDPOINTS.AUTH.LOGIN, { email, password });
     if (!data?.token) throw new Error("Backend no devolvió token");
-    storage.setToken(data.token);
-    storage.setUser(data.user ?? { email });
-    setUser(data.user ?? { email });
+    localStorage.setItem('token', data.token)
+    localStorage.setItem('user', JSON.stringify(data.user ?? { email }))
+    setUser(data.user ?? { email })
     toast.success("Bienvenido/a");
   };
 
   const logout = () => {
-    storage.clearAll();
-    setUser(null);
-    toast("Sesión cerrada");
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    setUser(null)
+    toast('Sesión cerrada')
   };
 
   const value = useMemo(() => ({ user, loading, login, register, logout }), [user, loading]);

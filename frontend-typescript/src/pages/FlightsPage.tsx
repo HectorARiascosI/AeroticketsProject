@@ -1,93 +1,105 @@
-import { useEffect, useMemo, useState } from 'react';
-import FlightFilters, { FlightFiltersValue } from '@/components/FlightFilters';
-import FlightCard from '@/components/FlightCard';
-import Loader from '@/components/ui/Loader';
-import EmptyState from '@/components/ui/EmptyState';
-import Card from '@/components/ui/Card';
-import Pagination from '@/components/ui/Pagination';
-import { getFlights } from '@/services/flightService';
-import { createReservation, getMyReservations } from '@/services/reservationService';
-import toast from 'react-hot-toast';
-import type { Flight, ReservationDTO } from '@/types';
-import { ResponsiveContainer, BarChart, XAxis, YAxis, Tooltip, Bar } from 'recharts';
+import { useEffect, useMemo, useState } from 'react'
+import FlightFilters, { FlightFiltersValue } from '@/components/FlightFilters'
+import FlightCard from '@/components/FlightCard'
+import Loader from '@/components/ui/Loader'
+import EmptyState from '@/components/ui/EmptyState'
+import Card from '@/components/ui/Card'
+import Pagination from '@/components/ui/Pagination'
+import { getFlights, searchLiveFlights } from '@/services/flightService'
+import { createReservation } from '@/services/reservationService'
+import toast from 'react-hot-toast'
+import { ResponsiveContainer, BarChart, XAxis, YAxis, Tooltip, Bar } from 'recharts'
 
 export default function FlightsPage() {
-  const [filters, setFilters] = useState<FlightFiltersValue>({ origin: '', destination: '', date: '', airline: '' });
-  const [loading, setLoading] = useState(true);
-  const [flights, setFlights] = useState<Flight[]>([]);
-  const [myRes, setMyRes] = useState<ReservationDTO[]>([]);
-  const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
-  const pageSize = 6;
+  const [filters, setFilters] = useState<FlightFiltersValue>({
+    origin: '', destination: '', date: '', airline: '',
+    live: false, provider: 'Aviationstack'
+  })
+  const [loading, setLoading] = useState(true)
+  const [flights, setFlights] = useState<any[]>([])
+  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(0)
+  const pageSize = 6
 
-  const fetchAll = async () => {
-    setLoading(true);
+  const fetchFlights = async () => {
+    setLoading(true)
     try {
-      const [fls, res] = await Promise.all([
-        getFlights(filters),
-        getMyReservations().catch(() => []) // si no hay, retorna vacío
-      ]);
-      setFlights(fls);
-      setTotal(fls.length);
-      setMyRes(res ?? []);
+      const data = filters.live
+        ? await searchLiveFlights({
+            origin: filters.origin,
+            destination: filters.destination,
+            date: filters.date,
+            airline: filters.airline
+          }, filters.provider)
+        : await getFlights({
+            origin: filters.origin,
+            destination: filters.destination,
+            date: filters.date,
+            airline: filters.airline
+          })
+      setFlights(data)
+      setTotal(data.length)
     } catch (e: any) {
-      toast.error(e?.response?.data?.message ?? 'No fue posible cargar datos');
+      toast.error(e?.response?.data?.message ?? 'No fue posible cargar vuelos')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
-  useEffect(() => { fetchAll(); }, []);
+  useEffect(() => { fetchFlights() }, [])
 
   const paginated = useMemo(() => {
-    const start = (page - 1) * pageSize;
-    return flights.slice(start, start + pageSize);
-  }, [flights, page]);
+    const start = (page - 1) * pageSize
+    return flights.slice(start, start + pageSize)
+  }, [flights, page])
 
-  const alreadyReserved = (flightId: number) =>
-    myRes.some(r => r.flightId === flightId && r.status === 'ACTIVE');
-
-  const onReserve = async (flight: Flight) => {
+  const onReserve = async (flight: any) => {
     try {
-      await createReservation(flight.id);
-      toast.success('Reserva creada');
-      await fetchAll();
+      await createReservation(flight.id)
+      toast.success('Reserva creada')
+      await fetchFlights()
     } catch (e: any) {
-      const status = e?.response?.status;
-      const msg = e?.response?.data?.message;
-      if (status === 409) {
-        toast.error(msg ?? 'Ya tienes una reserva activa en este vuelo');
+      if (e?.response?.status === 409) {
+        toast.error('Ya tienes una reserva activa para este vuelo')
       } else {
-        toast.error(msg ?? 'No fue posible reservar');
+        toast.error(e?.response?.data?.message ?? 'No fue posible reservar')
       }
     }
-  };
+  }
 
   const chartData = useMemo(() => {
-    const map = new Map<string, number>();
-    flights.forEach(f => map.set(f.airline, (map.get(f.airline) ?? 0) + 1));
-    return Array.from(map.entries()).map(([airline, count]) => ({ airline, count }));
-  }, [flights]);
+    // Sólo mostramos la gráfica para DEMO (tu BD). En live puede ser confuso.
+    if (filters.live) return []
+    const map = new Map<string, number>()
+    flights.forEach((f: any) => map.set(f.airline, (map.get(f.airline) ?? 0) + 1))
+    return Array.from(map.entries()).map(([airline, count]) => ({ airline, count }))
+  }, [flights, filters.live])
 
   return (
     <div className="max-w-6xl mx-auto py-6">
       <div className="mb-4">
-        <FlightFilters value={filters} onChange={patch => setFilters({ ...filters, ...patch })} onSearch={() => { setPage(1); fetchAll(); }} />
+        <FlightFilters
+          value={filters}
+          onChange={patch => setFilters(prev => ({ ...prev, ...patch }))}
+          onSearch={() => { setPage(1); fetchFlights() }}
+        />
       </div>
 
-      <Card className="mb-4">
-        <h3 className="font-semibold mb-3">Vuelos por aerolínea</h3>
-        <div style={{ width: '100%', height: 220 }}>
-          <ResponsiveContainer>
-            <BarChart data={chartData}>
-              <XAxis dataKey="airline" />
-              <YAxis allowDecimals={false} />
-              <Tooltip />
-              <Bar dataKey="count" fill="#0ea5e9" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </Card>
+      {!filters.live && (
+        <Card className="mb-4">
+          <h3 className="font-semibold mb-3">Vuelos por aerolínea</h3>
+          <div style={{ width: '100%', height: 220 }}>
+            <ResponsiveContainer>
+              <BarChart data={chartData}>
+                <XAxis dataKey="airline" />
+                <YAxis allowDecimals={false} />
+                <Tooltip />
+                <Bar dataKey="count" fill="#0ea5e9" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      )}
 
       {loading ? <Loader label="Cargando vuelos..." /> : (
         flights.length === 0 ? (
@@ -95,14 +107,8 @@ export default function FlightsPage() {
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {paginated.map(f => (
-                <FlightCard
-                  key={f.id}
-                  flight={f}
-                  onReserve={() => onReserve(f)}
-                  disabled={alreadyReserved(f.id)}
-                  disabledReason={alreadyReserved(f.id) ? 'Ya tienes reserva activa' : undefined}
-                />
+              {paginated.map((f, i) => (
+                <FlightCard key={i} flight={f} onReserve={onReserve} />
               ))}
             </div>
             <Pagination page={page} pageSize={pageSize} total={total} onChange={setPage} />
@@ -110,5 +116,5 @@ export default function FlightsPage() {
         )
       )}
     </div>
-  );
+  )
 }

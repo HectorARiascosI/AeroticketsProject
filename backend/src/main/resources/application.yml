@@ -1,6 +1,12 @@
+# ===========================================
+# 🔧 CONFIGURACIÓN PRINCIPAL DEL SERVIDOR
+# ===========================================
 server:
   port: 8080
 
+# ===========================================
+# 🗄️ CONFIGURACIÓN DE BASE DE DATOS Y JPA
+# ===========================================
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/aerotickets?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
@@ -20,6 +26,25 @@ spring:
   flyway:
     enabled: false
 
+# ===========================================
+# 🌐 INTEGRACIONES EXTERNAS (APIs DE VUELOS REALES)
+# ===========================================
+# ⚙️ Las claves se toman de variables de entorno:
+# AVIATIONSTACK_KEY y AERODATABOX_KEY
+# Si se desea probar localmente, se pueden colocar temporalmente aquí.
+external:
+  apis:
+    aviationstack:
+      base-url: "http://api.aviationstack.com/v1"
+      api-key: "${AVIATIONSTACK_KEY}"
+    aerodatabox:
+      base-url: "https://aerodatabox.p.rapidapi.com"
+      api-key: "${AERODATABOX_KEY}"
+      host: "aerodatabox.p.rapidapi.com"
+
+# ===========================================
+# 🧾 LOGGING / MONITOREO
+# ===========================================
 logging:
   file:
     name: logs/aerotickets.log
@@ -33,6 +58,9 @@ logging:
     console: "%clr(%d{yyyy-MM-dd HH:mm:ss}){faint} | %clr(%-5level){cyan} | %clr(%logger{36}){blue} | %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} | %-5level | %logger{36} | %msg%n"
 
+# ===========================================
+# 📈 ENDPOINTS DE MONITOREO (ACTUATOR)
+# ===========================================
 management:
   endpoints:
     web:
@@ -42,6 +70,9 @@ management:
     health:
       show-details: when_authorized
 
+# ===========================================
+# 🔐 SEGURIDAD JWT PERSONALIZADA
+# ===========================================
 vueler:
   jwt:
     secret: "ClaveUltraSeguraAeroticketsJWT_2025_Con32Caracteres_O_Mas"

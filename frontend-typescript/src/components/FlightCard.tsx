@@ -1,32 +1,51 @@
-import Button from './ui/Button'
-import Card from './ui/Card'
-import Badge from './ui/Badge'
-import { formatCurrency, formatDateTime } from '@/utils/format'
-import type { Flight } from '@/types'
+import Card from '@/components/ui/Card'
+import Button from '@/components/ui/Button'
+import Badge from '@/components/ui/Badge'
 
-export default function FlightCard({ flight, onReserve }: { flight: Flight; onReserve: (flight: Flight) => void }) {
+function formatDT(dt?: string) {
+  if (!dt) return '—'
+  try {
+    return new Date(dt).toLocaleString('es-CO', { dateStyle: 'short', timeStyle: 'short' })
+  } catch { return '—' }
+}
+
+export default function FlightCard({
+  flight,
+  onReserve
+}: {
+  flight: any
+  onReserve?: (flight: any) => void
+}) {
+
+  const isLive = !!flight.provider  // si viene de Aviationstack/AeroDataBox
+  const title = isLive
+    ? `${flight.originIata ?? '—'} → ${flight.destinationIata ?? '—'}`
+    : `${flight.origin} → ${flight.destination}`
+
+  const airline = isLive ? flight.airline : flight.airline
+  const departure = isLive ? formatDT(flight.departureAt) : formatDT(flight.departureTime)
+  const arrival = isLive ? formatDT(flight.arrivalAt) : formatDT(flight.arrivalTime)
+  const price = isLive ? '—' : Intl.NumberFormat('es-CO', { style:'currency', currency:'COP' }).format(flight.price ?? 0)
+
   return (
-    <Card className="flex items-center justify-between">
-      <div className="flex gap-4">
-        <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-primary to-accent grid place-items-center text-white font-bold">
-          {flight.airline?.slice(0, 2)?.toUpperCase() ?? 'AX'}
-        </div>
+    <Card>
+      <div className="flex justify-between items-start gap-4">
         <div>
-          <h3 className="font-semibold text-gray-800">
-            {flight.origin} → {flight.destination}{' '}
-            <Badge color="blue">{flight.airline}</Badge>
-          </h3>
-          <p className="text-sm text-gray-600">
-            {formatDateTime(flight.departureTime)} — {formatDateTime(flight.arrivalTime)}
-          </p>
-          <p className="text-xs text-gray-500">Asientos disponibles: {flight.availableSeats}</p>
+          <div className="text-lg font-semibold">{title}</div>
+          <div className="text-xs text-gray-500">{airline} {isLive && flight.flightNumber ? `· ${flight.flightNumber}`:''}</div>
+          <div className="text-xs text-gray-500">{departure} — {arrival}</div>
+          {isLive && <div className="mt-1"><Badge color="sky">{flight.status?.toUpperCase() ?? 'SCHEDULED'}</Badge></div>}
         </div>
-      </div>
-      <div className="text-right">
-        <div className="text-lg font-semibold text-gray-800">{formatCurrency(flight.price)}</div>
-        <Button className="mt-2" onClick={() => onReserve(flight)} disabled={flight.availableSeats <= 0}>
-          Reservar
-        </Button>
+        <div className="text-right">
+          <div className="text-xl font-bold">{price}</div>
+          {isLive ? (
+            <Button disabled title="Para reservar vuelos reales se requiere integración NDC/GDS">
+              No disponible
+            </Button>
+          ) : (
+            <Button onClick={() => onReserve && onReserve(flight)}>Reservar</Button>
+          )}
+        </div>
       </div>
     </Card>
   )

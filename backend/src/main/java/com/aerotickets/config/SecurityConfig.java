@@ -30,17 +30,18 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // ✅ Endpoints públicos
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/flights/**").permitAll()
-                        // 🔐 Todo lo demás requiere autenticación
-                        .anyRequest().authenticated()
-                )
+                		.requestMatchers("/api/auth/**").permitAll()
+                	    .requestMatchers(HttpMethod.GET, "/api/flights/**").permitAll()
+                	    .requestMatchers(HttpMethod.GET, "/api/live/**").permitAll() // ← nuevo
+                	    .anyRequest().authenticated()
+                	)
+                	// ...
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
-
+    
+    
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         var configuration = new CorsConfiguration();

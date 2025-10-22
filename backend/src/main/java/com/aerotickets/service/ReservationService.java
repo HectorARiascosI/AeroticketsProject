@@ -3,6 +3,8 @@ package com.aerotickets.service;
 import com.aerotickets.dto.ReservationRequestDTO;
 import com.aerotickets.dto.ReservationResponseDTO;
 import com.aerotickets.entity.*;
+import com.aerotickets.exception.ConflictException;
+import com.aerotickets.exception.NotFoundException;
 import com.aerotickets.repository.FlightRepository;
 import com.aerotickets.repository.ReservationRepository;
 import com.aerotickets.repository.UserRepository;
@@ -31,14 +33,14 @@ public class ReservationService {
     @Transactional
     public ReservationResponseDTO create(String userEmail, ReservationRequestDTO dto) {
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+                .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
 
         Flight flight = flightRepository.findById(dto.getFlightId())
-                .orElseThrow(() -> new IllegalArgumentException("Vuelo no encontrado"));
+                .orElseThrow(() -> new NotFoundException("Vuelo no encontrado"));
 
         long ocupados = reservationRepository.countByFlight_IdAndStatus(flight.getId(), ReservationStatus.ACTIVE);
         if (ocupados >= flight.getTotalSeats()) {
-            throw new IllegalStateException("No hay cupos disponibles para este vuelo");
+            throw new ConflictException("No hay cupos disponibles para este vuelo");
         }
 
         if (dto.getSeatNumber() != null) {
@@ -47,7 +49,7 @@ public class ReservationService {
             }
             if (reservationRepository.existsByFlight_IdAndSeatNumberAndStatus(
                     flight.getId(), dto.getSeatNumber(), ReservationStatus.ACTIVE)) {
-                throw new IllegalStateException("Ese asiento ya fue reservado");
+                throw new ConflictException("Ese asiento ya fue reservado");
             }
         }
 
@@ -61,12 +63,11 @@ public class ReservationService {
             Reservation saved = reservationRepository.save(r);
             return toDto(saved);
         } catch (DataIntegrityViolationException ex) {
-            // Cuando el usuario ya tiene una reserva activa en ese vuelo
-            throw new IllegalStateException("Ya tienes una reserva activa en este vuelo");
+            // Ej: uk_res_flight_user_active: un vuelo por usuario en estado ACTIVE
+            throw new ConflictException("Ya tienes una reserva ACTIVA en este vuelo");
         }
     }
 
-    @Transactional(Transactional.TxType.SUPPORTS)
     public List<ReservationResponseDTO> listMine(String userEmail) {
         return reservationRepository.findByUser_EmailOrderByCreatedAtDesc(userEmail)
                 .stream().map(this::toDto).collect(Collectors.toList());
@@ -75,7 +76,7 @@ public class ReservationService {
     @Transactional
     public void cancel(String userEmail, Long reservationId) {
         Reservation r = reservationRepository.findByIdAndUser_Email(reservationId, userEmail)
-                .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada"));
+                .orElseThrow(() -> new NotFoundException("Reserva no encontrada"));
         if (r.getStatus() == ReservationStatus.CANCELLED) return;
         r.setStatus(ReservationStatus.CANCELLED);
         reservationRepository.save(r);

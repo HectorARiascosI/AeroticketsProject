@@ -1,6 +1,6 @@
-import api from '@/api/client';
-import { ENDPOINTS } from '@/api/endpoints';
-import type { ReservationDTO } from '@/types';
+import api from "@/api/client";
+import { ENDPOINTS } from "@/api/endpoints";
+import { ReservationDTO } from "@/types";
 
 export async function getMyReservations(): Promise<ReservationDTO[]> {
   const { data } = await api.get(ENDPOINTS.RESERVATIONS.MINE);
@@ -8,10 +8,13 @@ export async function getMyReservations(): Promise<ReservationDTO[]> {
 }
 
 export async function createReservation(flightId: number, seatNumber?: number) {
-  const { data } = await api.post(ENDPOINTS.RESERVATIONS.BASE, { flightId, seatNumber });
+  const payload: any = { flightId };
+  if (seatNumber) payload.seatNumber = seatNumber;
+  const { data } = await api.post(ENDPOINTS.RESERVATIONS.BASE, payload);
   return data;
 }
 
 export async function cancelReservation(id: number) {
-  await api.delete(`${ENDPOINTS.RESERVATIONS.BASE}/${id}`);
+  const { data } = await api.delete(`${ENDPOINTS.RESERVATIONS.BASE}/${id}`);
+  return data;
 }

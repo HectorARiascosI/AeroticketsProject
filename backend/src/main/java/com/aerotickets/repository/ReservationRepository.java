@@ -14,7 +14,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     boolean existsByFlight_IdAndSeatNumberAndStatus(Long flightId, Integer seatNumber, ReservationStatus status);
 
-    // ✅ Cargar el vuelo junto a la reserva (soluciona LazyInitializationException)
+    // ✅ Esto es clave:
     @EntityGraph(attributePaths = {"flight"})
     List<Reservation> findByUser_EmailOrderByCreatedAtDesc(String email);
 
