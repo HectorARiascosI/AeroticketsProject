@@ -17,10 +17,7 @@ api.interceptors.response.use(
     const status = err.response?.status
     if (status === 401 || status === 403) {
       localStorage.removeItem('token')
-      localStorage.removeItem('user')
-      if (!location.pathname.startsWith('/login')) {
-        window.location.href = '/login'
-      }
+      window.location.href = '/login'
     }
     return Promise.reject(err)
   }

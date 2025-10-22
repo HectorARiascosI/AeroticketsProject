@@ -1,20 +1,11 @@
 package com.aerotickets.external.aviationstack;
 
-import com.aerotickets.external.dto.ExternalFlightDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -23,78 +14,32 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AviationstackProvider {
 
-    private final WebClient.Builder webClientBuilder;
+    private final WebClient webClient;
 
-    @Value("${external.apis.aviationstack.base-url}")
-    private String baseUrl;
+    @SuppressWarnings("unchecked")
+    public List<Map<String, Object>> getLiveFlights(String depIata, String arrIata) {
+        String baseUrl = "http://api.aviationstack.com/v1/flights";
+        String apiKey = System.getenv("AVIATIONSTACK_KEY");
 
-    @Value("${external.apis.aviationstack.api-key}")
-    private String apiKey;
+        String url = String.format("%s?access_key=%s&dep_iata=%s&arr_iata=%s",
+                baseUrl, apiKey, depIata, arrIata);
 
-    @Cacheable("aviationstack-flights")
-    public List<ExternalFlightDTO> getFlights(String origin, String destination) {
-        try {
-            String encodedOrigin = URLEncoder.encode(origin, StandardCharsets.UTF_8);
-            String encodedDestination = URLEncoder.encode(destination, StandardCharsets.UTF_8);
+        log.info("🔍 Consultando Aviationstack: {}", url);
 
-            URI uri = new URI(baseUrl + "/flights?access_key=" + apiKey +
-                    "&dep_iata=" + encodedOrigin +
-                    "&arr_iata=" + encodedDestination +
-                    "&limit=10");
+        Map<String, Object> response = webClient.get()
+                .uri(url)
+                .retrieve()
+                .bodyToMono(Map.class)
+                .onErrorResume(e -> {
+                    log.error("❌ Error al consumir Aviationstack: {}", e.getMessage());
+                    return Mono.just(Map.of());
+                })
+                .block();
 
-            log.info("🌐 Consultando AviationStack API: {}", uri);
-
-            WebClient client = webClientBuilder
-                    .baseUrl(baseUrl)
-                    .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .build();
-
-            // ✅ Aquí corregimos el tipo esperado del body
-            MapAviationstack response = client.get()
-                    .uri(uri)
-                    .retrieve()
-                    .bodyToMono(MapAviationstack.class)
-                    .onErrorResume(e -> {
-                        log.error("❌ Error al consumir AviationStack API: {}", e.getMessage());
-                        return Mono.empty();
-                    })
-                    .block();
-
-            if (response == null) return Collections.emptyList();
-
-            return response.toDTOs(response, origin);
-        } catch (Exception e) {
-            log.error("❌ Error general en AviationstackProvider: {}", e.getMessage());
-            return Collections.emptyList();
+        if (response == null || !response.containsKey("data")) {
+            return List.of();
         }
-    }
 
-    /**
-     * Clase para mapear la respuesta de AviationStack
-     */
-    public static class MapAviationstack {
-        public List<Map<String, Object>> data;
-        @SuppressWarnings("unchecked")
-        public List<ExternalFlightDTO> toDTOs(MapAviationstack map, String origin) {
-            if (map == null || map.data == null) return Collections.emptyList();
-
-            return map.data.stream()
-                    .map((Map<String, Object> entry) -> {
-                        Map<String, Object> flight = entry;
-                        Map<String, Object> airline = (Map<String, Object>) flight.get("airline");
-                        Map<String, Object> dep = (Map<String, Object>) flight.get("departure");
-                        Map<String, Object> arr = (Map<String, Object>) flight.get("arrival");
-
-                        ExternalFlightDTO dto = new ExternalFlightDTO();
-                        dto.setAirline(airline != null ? (String) airline.get("name") : "Desconocida");
-                        dto.setOrigin(dep != null ? (String) dep.get("iata") : origin);
-                        dto.setDestination(arr != null ? (String) arr.get("iata") : "");
-                        dto.setDepartureTime(dep != null ? (String) dep.get("scheduled") : null);
-                        dto.setArrivalTime(arr != null ? (String) arr.get("scheduled") : null);
-                        dto.setPrice(250000.0);
-                        return dto;
-                    })
-                    .toList();
-        }
+        return (List<Map<String, Object>>) response.get("data");
     }
 }

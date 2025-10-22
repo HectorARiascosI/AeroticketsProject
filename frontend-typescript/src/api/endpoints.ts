@@ -7,10 +7,11 @@ export const ENDPOINTS = {
   },
   FLIGHTS: '/flights',
   LIVE: {
-    SEARCH: '/live/flights/search'
+    AIRPORTS_SEARCH: '/live/airports/search', // ?q=term
+    SEARCH: '/live/flights/search'            // ?origin=bogota&destination=medellin | ?origin=BOG
   },
   RESERVATIONS: {
     BASE: '/reservations',
     MINE: '/reservations/my'
   }
-} as const;
+} as const
