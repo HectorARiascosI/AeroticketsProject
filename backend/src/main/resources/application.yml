@@ -20,16 +20,18 @@ spring:
   flyway:
     enabled: false
 
+# =============================
+# 🌐 API Externa: AirLabs
+# =============================
 external:
   apis:
-    aviationstack:
-      base-url: "http://api.aviationstack.com/v1"
-      api-key: "${AVIATIONSTACK_KEY}"
-    aerodatabox:
-      base-url: "https://aerodatabox.p.rapidapi.com"
-      api-key: "${AERODATABOX_KEY}"
-      host: "aerodatabox.p.rapidapi.com"
+    airlabs:
+      base-url: "https://airlabs.co/api/v9"
+      api-key: "${AIRLABS_API_KEY}"   # <-- definir en tu entorno
 
+# =============================
+# 🧾 Logging
+# =============================
 logging:
   file:
     name: logs/aerotickets.log

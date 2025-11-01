@@ -1,0 +1,218 @@
+2025-10-22 00:15:35 | ERROR | o.s.boot.SpringApplication | Application run failed
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'aviationstackProvider': Injection of autowired dependencies failed
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:514)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1439)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:599)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:335)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:975)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:971)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:625)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352)
+	at com.aerotickets.App.main(App.java:26)
+Caused by: java.lang.IllegalArgumentException: Could not resolve placeholder 'AVIATIONSTACK_KEY' in value "${AVIATIONSTACK_KEY}"
+	at org.springframework.util.PropertyPlaceholderHelper.parseStringValue(PropertyPlaceholderHelper.java:180)
+	at org.springframework.util.PropertyPlaceholderHelper.replacePlaceholders(PropertyPlaceholderHelper.java:126)
+	at org.springframework.core.env.AbstractPropertyResolver.doResolvePlaceholders(AbstractPropertyResolver.java:239)
+	at org.springframework.core.env.AbstractPropertyResolver.resolveRequiredPlaceholders(AbstractPropertyResolver.java:210)
+	at org.springframework.core.env.AbstractPropertyResolver.resolveNestedPlaceholders(AbstractPropertyResolver.java:230)
+	at org.springframework.boot.context.properties.source.ConfigurationPropertySourcesPropertyResolver.getProperty(ConfigurationPropertySourcesPropertyResolver.java:80)
+	at org.springframework.boot.context.properties.source.ConfigurationPropertySourcesPropertyResolver.getProperty(ConfigurationPropertySourcesPropertyResolver.java:61)
+	at org.springframework.core.env.AbstractEnvironment.getProperty(AbstractEnvironment.java:552)
+	at org.springframework.context.support.PropertySourcesPlaceholderConfigurer$1.getProperty(PropertySourcesPlaceholderConfigurer.java:153)
+	at org.springframework.context.support.PropertySourcesPlaceholderConfigurer$1.getProperty(PropertySourcesPlaceholderConfigurer.java:149)
+	at org.springframework.core.env.PropertySourcesPropertyResolver.getProperty(PropertySourcesPropertyResolver.java:85)
+	at org.springframework.core.env.PropertySourcesPropertyResolver.getPropertyAsRawString(PropertySourcesPropertyResolver.java:74)
+	at org.springframework.util.PropertyPlaceholderHelper.parseStringValue(PropertyPlaceholderHelper.java:153)
+	at org.springframework.util.PropertyPlaceholderHelper.replacePlaceholders(PropertyPlaceholderHelper.java:126)
+	at org.springframework.core.env.AbstractPropertyResolver.doResolvePlaceholders(AbstractPropertyResolver.java:239)
+	at org.springframework.core.env.AbstractPropertyResolver.resolveRequiredPlaceholders(AbstractPropertyResolver.java:210)
+	at org.springframework.context.support.PropertySourcesPlaceholderConfigurer.lambda$processProperties$0(PropertySourcesPlaceholderConfigurer.java:200)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.resolveEmbeddedValue(AbstractBeanFactory.java:964)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1374)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1353)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:784)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:767)
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:145)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:508)
+	... 17 common frames omitted
+2025-10-22 00:21:28 | ERROR | o.s.boot.SpringApplication | Application run failed
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'aviationstackProvider': Injection of autowired dependencies failed
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:514)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1439)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:599)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:335)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:975)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:971)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:625)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352)
+	at com.aerotickets.App.main(App.java:26)
+Caused by: java.lang.IllegalArgumentException: Could not resolve placeholder 'AVIATIONSTACK_KEY' in value "${AVIATIONSTACK_KEY}"
+	at org.springframework.util.PropertyPlaceholderHelper.parseStringValue(PropertyPlaceholderHelper.java:180)
+	at org.springframework.util.PropertyPlaceholderHelper.replacePlaceholders(PropertyPlaceholderHelper.java:126)
+	at org.springframework.core.env.AbstractPropertyResolver.doResolvePlaceholders(AbstractPropertyResolver.java:239)
+	at org.springframework.core.env.AbstractPropertyResolver.resolveRequiredPlaceholders(AbstractPropertyResolver.java:210)
+	at org.springframework.core.env.AbstractPropertyResolver.resolveNestedPlaceholders(AbstractPropertyResolver.java:230)
+	at org.springframework.boot.context.properties.source.ConfigurationPropertySourcesPropertyResolver.getProperty(ConfigurationPropertySourcesPropertyResolver.java:80)
+	at org.springframework.boot.context.properties.source.ConfigurationPropertySourcesPropertyResolver.getProperty(ConfigurationPropertySourcesPropertyResolver.java:61)
+	at org.springframework.core.env.AbstractEnvironment.getProperty(AbstractEnvironment.java:552)
+	at org.springframework.context.support.PropertySourcesPlaceholderConfigurer$1.getProperty(PropertySourcesPlaceholderConfigurer.java:153)
+	at org.springframework.context.support.PropertySourcesPlaceholderConfigurer$1.getProperty(PropertySourcesPlaceholderConfigurer.java:149)
+	at org.springframework.core.env.PropertySourcesPropertyResolver.getProperty(PropertySourcesPropertyResolver.java:85)
+	at org.springframework.core.env.PropertySourcesPropertyResolver.getPropertyAsRawString(PropertySourcesPropertyResolver.java:74)
+	at org.springframework.util.PropertyPlaceholderHelper.parseStringValue(PropertyPlaceholderHelper.java:153)
+	at org.springframework.util.PropertyPlaceholderHelper.replacePlaceholders(PropertyPlaceholderHelper.java:126)
+	at org.springframework.core.env.AbstractPropertyResolver.doResolvePlaceholders(AbstractPropertyResolver.java:239)
+	at org.springframework.core.env.AbstractPropertyResolver.resolveRequiredPlaceholders(AbstractPropertyResolver.java:210)
+	at org.springframework.context.support.PropertySourcesPlaceholderConfigurer.lambda$processProperties$0(PropertySourcesPlaceholderConfigurer.java:200)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.resolveEmbeddedValue(AbstractBeanFactory.java:964)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1374)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1353)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:784)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:767)
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:145)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:508)
+	... 17 common frames omitted
+2025-10-22 05:24:05 | ERROR | o.h.e.jdbc.spi.SqlExceptionHelper | Duplicate entry '2-3-CANCELLED' for key 'reservations.uk_res_flight_user_active'
+2025-10-22 05:24:11 | ERROR | o.h.e.jdbc.spi.SqlExceptionHelper | Duplicate entry '2-3-CANCELLED' for key 'reservations.uk_res_flight_user_active'
+2025-10-22 05:24:18 | ERROR | o.h.e.jdbc.spi.SqlExceptionHelper | Duplicate entry '2-3-CANCELLED' for key 'reservations.uk_res_flight_user_active'
+2025-10-22 06:09:01 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (1000 ms)[0m
+2025-10-22 06:09:01 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (10 ms)[0m
+2025-10-22 06:09:01 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (1053 ms)[0m
+2025-10-22 06:09:01 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (10 ms)[0m
+2025-10-22 06:14:40 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (98382 ms)[0m
+2025-10-22 06:14:40 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (97135 ms)[0m
+2025-10-22 06:14:40 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/flights/search - 500 (98688 ms)[0m
+2025-10-22 06:26:15 | ERROR | o.s.boot.SpringApplication | Application run failed
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'liveFlightController' defined in file [C:\Users\Familia\Desktop\AeroticketsProject\backend\target\classes\com\aerotickets\controller\LiveFlightController.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'liveFlightService' defined in file [C:\Users\Familia\Desktop\AeroticketsProject\backend\target\classes\com\aerotickets\service\LiveFlightService.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'aviationstackProvider': Injection of autowired dependencies failed
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:795)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:237)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1375)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1212)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:562)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:335)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:975)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:971)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:625)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352)
+	at com.aerotickets.App.main(App.java:30)
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'liveFlightService' defined in file [C:\Users\Familia\Desktop\AeroticketsProject\backend\target\classes\com\aerotickets\service\LiveFlightService.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'aviationstackProvider': Injection of autowired dependencies failed
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:795)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:237)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1375)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1212)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:562)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:335)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1443)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1353)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:904)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:782)
+	... 19 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'aviationstackProvider': Injection of autowired dependencies failed
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:514)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1439)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:599)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:335)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1443)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1353)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:904)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:782)
+	... 33 common frames omitted
+Caused by: java.lang.IllegalArgumentException: Could not resolve placeholder 'AVIATIONSTACK_KEY' in value "${AVIATIONSTACK_KEY}"
+	at org.springframework.util.PropertyPlaceholderHelper.parseStringValue(PropertyPlaceholderHelper.java:180)
+	at org.springframework.util.PropertyPlaceholderHelper.replacePlaceholders(PropertyPlaceholderHelper.java:126)
+	at org.springframework.core.env.AbstractPropertyResolver.doResolvePlaceholders(AbstractPropertyResolver.java:239)
+	at org.springframework.core.env.AbstractPropertyResolver.resolveRequiredPlaceholders(AbstractPropertyResolver.java:210)
+	at org.springframework.core.env.AbstractPropertyResolver.resolveNestedPlaceholders(AbstractPropertyResolver.java:230)
+	at org.springframework.boot.context.properties.source.ConfigurationPropertySourcesPropertyResolver.getProperty(ConfigurationPropertySourcesPropertyResolver.java:80)
+	at org.springframework.boot.context.properties.source.ConfigurationPropertySourcesPropertyResolver.getProperty(ConfigurationPropertySourcesPropertyResolver.java:61)
+	at org.springframework.core.env.AbstractEnvironment.getProperty(AbstractEnvironment.java:552)
+	at org.springframework.context.support.PropertySourcesPlaceholderConfigurer$1.getProperty(PropertySourcesPlaceholderConfigurer.java:153)
+	at org.springframework.context.support.PropertySourcesPlaceholderConfigurer$1.getProperty(PropertySourcesPlaceholderConfigurer.java:149)
+	at org.springframework.core.env.PropertySourcesPropertyResolver.getProperty(PropertySourcesPropertyResolver.java:85)
+	at org.springframework.core.env.PropertySourcesPropertyResolver.getPropertyAsRawString(PropertySourcesPropertyResolver.java:74)
+	at org.springframework.util.PropertyPlaceholderHelper.parseStringValue(PropertyPlaceholderHelper.java:159)
+	at org.springframework.util.PropertyPlaceholderHelper.replacePlaceholders(PropertyPlaceholderHelper.java:126)
+	at org.springframework.core.env.AbstractPropertyResolver.doResolvePlaceholders(AbstractPropertyResolver.java:239)
+	at org.springframework.core.env.AbstractPropertyResolver.resolveRequiredPlaceholders(AbstractPropertyResolver.java:210)
+	at org.springframework.context.support.PropertySourcesPlaceholderConfigurer.lambda$processProperties$0(PropertySourcesPlaceholderConfigurer.java:200)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.resolveEmbeddedValue(AbstractBeanFactory.java:964)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1374)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1353)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:784)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:767)
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:145)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:508)
+	... 45 common frames omitted
+2025-10-22 07:27:55 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (39 ms)[0m
+2025-10-22 07:27:59 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (10 ms)[0m
+2025-10-22 07:28:04 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (35 ms)[0m
+2025-10-22 07:28:07 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (9 ms)[0m
+2025-10-22 07:36:14 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (13 ms)[0m
+2025-10-22 07:36:23 | ERROR | c.a.e.a.AviationstackProvider | ❌ Error al consumir Aviationstack: HTTP 401 UNAUTHORIZED en http://api.aviationstack.com/v1/flights?access_key=null&dep_iata=PAS&arr_iata=null
+2025-10-22 07:36:23 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (80 ms)[0m
+2025-10-22 07:36:27 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (14 ms)[0m
+2025-10-22 07:36:41 | ERROR | c.a.e.a.AeroDataBoxProvider | ❌ Error al consumir AeroDataBox: Failed to resolve 'aerodatabox.p.rapidapi.com' [A(1)] after 3 queries 
+2025-10-22 07:47:52 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (11 ms)[0m
+2025-10-22 07:47:58 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (7 ms)[0m
+2025-10-22 07:48:04 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (12 ms)[0m
+2025-10-22 07:48:06 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (12 ms)[0m
+2025-10-22 10:15:19 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (343 ms)[0m
+2025-10-22 10:15:24 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (14 ms)[0m
+2025-10-22 10:15:25 | ERROR | c.a.e.a.AviationstackProvider | ❌ Error al consumir Aviationstack: HTTP 401 UNAUTHORIZED en http://api.aviationstack.com/v1/flights?access_key=null&dep_iata=CAL&arr_iata=null
+2025-10-22 10:15:25 | ERROR | c.a.e.a.AviationstackProvider | ❌ Error al consumir Aviationstack: HTTP 401 UNAUTHORIZED en http://api.aviationstack.com/v1/flights?access_key=null&dep_iata=CLO&arr_iata=null
+2025-10-22 10:15:25 | ERROR | c.a.e.a.AviationstackProvider | ❌ Error al consumir Aviationstack: HTTP 401 UNAUTHORIZED en http://api.aviationstack.com/v1/flights?access_key=null&dep_iata=PAS&arr_iata=null
+2025-10-22 10:15:25 | ERROR | c.a.e.a.AviationstackProvider | ❌ Error al consumir Aviationstack: HTTP 401 UNAUTHORIZED en http://api.aviationstack.com/v1/flights?access_key=null&dep_iata=PSO&arr_iata=null
+2025-10-22 10:15:29 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (13 ms)[0m
+2025-10-22 10:15:35 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (11 ms)[0m
+2025-10-22 10:15:38 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (12 ms)[0m
+2025-10-22 10:15:43 | ERROR | c.a.e.a.AviationstackProvider | ❌ Error al consumir Aviationstack: HTTP 401 UNAUTHORIZED en http://api.aviationstack.com/v1/flights?access_key=null&dep_iata=PAS&arr_iata=null
+2025-10-22 10:15:44 | ERROR | c.a.e.a.AeroDataBoxProvider | ❌ Error al consumir AeroDataBox: HTTP 429 TOO_MANY_REQUESTS en https://aerodatabox.p.rapidapi.com/flights/airports/icao/CLO/departures?limit=10
+2025-10-22 10:15:44 | ERROR | c.a.e.a.AeroDataBoxProvider | ❌ Error al consumir AeroDataBox: HTTP 429 TOO_MANY_REQUESTS en https://aerodatabox.p.rapidapi.com/flights/airports/icao/CAL/departures?limit=10
+2025-10-22 10:15:44 | ERROR | c.a.e.a.AeroDataBoxProvider | ❌ Error al consumir AeroDataBox: HTTP 429 TOO_MANY_REQUESTS en https://aerodatabox.p.rapidapi.com/flights/airports/icao/PAS/departures?limit=10
+2025-10-22 10:15:44 | ERROR | c.a.e.a.AeroDataBoxProvider | ❌ Error al consumir AeroDataBox: HTTP 401 UNAUTHORIZED en https://aerodatabox.p.rapidapi.com/flights/airports/icao/PSO/departures?limit=10
+2025-10-22 10:15:44 | ERROR | c.a.e.a.AviationstackProvider | ❌ Error al consumir Aviationstack: HTTP 401 UNAUTHORIZED en http://api.aviationstack.com/v1/flights?access_key=null&dep_iata=CAL&arr_iata=null
+2025-10-22 10:15:45 | ERROR | c.a.e.a.AviationstackProvider | ❌ Error al consumir Aviationstack: HTTP 401 UNAUTHORIZED en http://api.aviationstack.com/v1/flights?access_key=null&dep_iata=CLO&arr_iata=null
+2025-10-22 10:15:45 | ERROR | c.a.e.a.AeroDataBoxProvider | ❌ Error al consumir AeroDataBox: HTTP 429 TOO_MANY_REQUESTS en https://aerodatabox.p.rapidapi.com/flights/airports/icao/CAL/departures?limit=10
+2025-10-22 10:15:45 | ERROR | c.a.e.a.AeroDataBoxProvider | ❌ Error al consumir AeroDataBox: HTTP 429 TOO_MANY_REQUESTS en https://aerodatabox.p.rapidapi.com/flights/airports/icao/CLO/departures?limit=10
+2025-10-22 10:15:51 | ERROR | c.a.e.a.AeroDataBoxProvider | ❌ Error al consumir AeroDataBox: HTTP 401 UNAUTHORIZED en https://aerodatabox.p.rapidapi.com/flights/airports/icao/PAS/departures?limit=10
+2025-10-22 11:00:25 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (3907 ms)[0m
+2025-10-22 11:00:25 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (3907 ms)[0m
+2025-10-22 11:01:15 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (151 ms)[0m
+2025-10-22 11:01:15 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/live/autocomplete - 500 (134 ms)[0m

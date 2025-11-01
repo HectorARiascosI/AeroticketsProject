@@ -1,7 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-           https://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -20,11 +19,10 @@
   <properties>
     <java.version>21</java.version>
     <jjwt.version>0.11.5</jjwt.version>
-    <reactor.netty.version>1.1.19</reactor.netty.version>
   </properties>
 
   <dependencies>
-    <!-- Web MVC existente -->
+    <!-- Spring Boot Web MVC -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
@@ -36,7 +34,7 @@
       <artifactId>spring-boot-starter-webflux</artifactId>
     </dependency>
 
-    <!-- Carga de .env (ya lo tienes) -->
+    <!-- Carga de variables .env -->
     <dependency>
       <groupId>io.github.cdimascio</groupId>
       <artifactId>java-dotenv</artifactId>
@@ -98,7 +96,7 @@
       <optional>true</optional>
     </dependency>
 
-    <!-- Cache con Caffeine -->
+    <!-- Cache con Caffeine (sin version para evitar duplicados) -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-cache</artifactId>
@@ -106,21 +104,20 @@
     <dependency>
       <groupId>com.github.ben-manes.caffeine</groupId>
       <artifactId>caffeine</artifactId>
-      </dependency>
+    </dependency>
 
-    <!-- Reactor Netty para timeouts de WebClient -->
+    <!-- Reactor Netty (sin version, controlada por Boot) -->
     <dependency>
       <groupId>io.projectreactor.netty</groupId>
       <artifactId>reactor-netty-http</artifactId>
-      </dependency>
+    </dependency>
 
-    <!-- Test -->
+    <!-- Tests -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
   <build>

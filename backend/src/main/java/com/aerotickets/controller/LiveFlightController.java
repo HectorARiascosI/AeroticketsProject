@@ -2,109 +2,57 @@ package com.aerotickets.controller;
 
 import com.aerotickets.model.LiveFlight;
 import com.aerotickets.service.LiveFlightService;
-import com.aerotickets.util.IataResolver;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import com.aerotickets.service.SimulationRegistry;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.*;
 
-/**
- * Controlador REST para vuelos en tiempo real y autocompletado.
- * Gestiona búsqueda de vuelos y sugerencias de aeropuertos/ciudades.
- */
-@Slf4j
 @RestController
 @RequestMapping("/api/live")
-@RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class LiveFlightController {
 
-    private final LiveFlightService liveFlightService;
+    private final LiveFlightService service;
+    private final SimulationRegistry registry;
 
-    /**
-     * 🔍 Endpoint para buscar vuelos en tiempo real
-     * Ejemplo: /api/live/flights/search?origin=BOG&destination=MDE
-     */
+    public LiveFlightController(LiveFlightService service, SimulationRegistry registry) {
+        this.service = service;
+        this.registry = registry;
+    }
+
+    @GetMapping("/autocomplete")
+    public ResponseEntity<List<Map<String, Object>>> autocomplete(@RequestParam("query") String query) {
+        if (query == null || query.isBlank()) return ResponseEntity.ok(List.of());
+        return ResponseEntity.ok(service.autocompleteAirports(query.trim()));
+    }
+
     @GetMapping("/flights/search")
-    public ResponseEntity<Map<String, Object>> searchFlights(
-            @RequestParam(required = false) String origin,
-            @RequestParam(required = false) String destination,
+    public ResponseEntity<Map<String, Object>> search(
+            @RequestParam String origin,
+            @RequestParam String destination,
             @RequestParam(required = false) String date
     ) {
-        try {
-            log.info("✈️  Buscando vuelos en vivo: {} -> {}, fecha={}", origin, destination, date);
-
-            List<LiveFlight> flights = liveFlightService.searchLiveFlights(origin, destination, date);
-            Map<String, Object> body = new LinkedHashMap<>();
-            body.put("source", "live");
-            body.put("count", flights.size());
-            body.put("items", flights);
-
-            return ResponseEntity.ok(body);
-        } catch (Exception e) {
-            log.error("❌ Error al buscar vuelos en vivo: {}", e.getMessage());
-            return ResponseEntity.internalServerError().body(Map.of(
-                    "error", "No se pudieron obtener vuelos en vivo",
-                    "details", e.getMessage()
-            ));
-        }
+        List<LiveFlight> items = service.searchLive(origin, destination, date, "simulator");
+        Map<String, Object> body = new HashMap<>();
+        body.put("source", "live/simulator");
+        body.put("count", items.size());
+        body.put("items", items);
+        return ResponseEntity.ok(body);
     }
 
-    /**
-     * 🧭 Endpoint de autocompletado: sugiere ciudades o aeropuertos.
-     * Ejemplo: /api/live/autocomplete?query=bog
-     */
-    @GetMapping("/autocomplete")
-    public ResponseEntity<List<Map<String, String>>> autocomplete(
-            @RequestParam String query
-    ) {
-        try {
-            log.info("🔤 Autocompletando: {}", query);
-            if (query == null || query.isBlank()) {
-                return ResponseEntity.ok(Collections.emptyList());
-            }
-
-            String normalized = query.trim().toLowerCase(Locale.forLanguageTag("es-CO"));
-            List<Map<String, String>> results = new ArrayList<>();
-
-            // Buscamos coincidencias manuales desde el IataResolver
-            Map<String, String> cityMap = getCityToIata();
-            cityMap.forEach((city, iata) -> {
-                if (city.contains(normalized) || iata.equalsIgnoreCase(normalized)) {
-                    Map<String, String> suggestion = new HashMap<>();
-                    suggestion.put("label", capitalize(city) + " (" + iata + ")");
-                    suggestion.put("value", iata);
-                    results.add(suggestion);
-                }
-            });
-
-            // Si no encuentra nada, responde vacío sin error 500
-            return ResponseEntity.ok(results);
-        } catch (Exception e) {
-            log.error("❌ Error en autocomplete: {}", e.getMessage());
-            return ResponseEntity.internalServerError().body(Collections.emptyList());
-        }
+    @GetMapping("/status/{flightNumber}")
+    public ResponseEntity<?> status(@PathVariable String flightNumber) {
+        return registry.get(flightNumber)
+                .<ResponseEntity<?>>map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    // ===============================================================
-    // 🔧 Métodos auxiliares
-    // ===============================================================
-
-    private Map<String, String> getCityToIata() {
-        try {
-            java.lang.reflect.Field field = IataResolver.class.getDeclaredField("cityToIata");
-            field.setAccessible(true);
-            return (Map<String, String>) field.get(null);
-        } catch (Exception e) {
-            log.error("Error al acceder a IataResolver.cityToIata: {}", e.getMessage());
-            return Map.of();
-        }
-    }
-
-    private String capitalize(String s) {
-        if (s == null || s.isBlank()) return s;
-        return s.substring(0, 1).toUpperCase() + s.substring(1);
+    // Stream de eventos (SSE): EventSource en frontend
+    @GetMapping(path = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter stream() {
+        return registry.subscribe();
     }
 }

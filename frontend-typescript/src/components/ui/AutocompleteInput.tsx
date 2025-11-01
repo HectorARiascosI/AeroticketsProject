@@ -1,118 +1,87 @@
-// frontend/src/components/ui/AutocompleteInput.tsx
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { autocompleteAirports } from '@/services/flightService';
+import clsx from 'clsx';
 
-export type AutocompleteItem = {
-  id: string;          // puede ser IATA o un UUID
-  code?: string;       // IATA si aplica
-  name: string;        // "Bogotá - El Dorado (BOG), Colombia"
-  city?: string;
-  country?: string;
-};
-
-type Props = {
-  label?: string;
-  placeholder?: string;
-  value: string;
-  onChangeValue: (val: string) => void;
-  onSelectItem?: (item: AutocompleteItem) => void;
-  fetcher: (q: string) => Promise<AutocompleteItem[]>;
-  minChars?: number;
-  disabled?: boolean;
-};
-
-function useDebounced<T>(value: T, delay = 350) {
-  const [v, setV] = useState(value);
-  useEffect(() => {
-    const t = setTimeout(() => setV(value), delay);
-    return () => clearTimeout(t);
-  }, [value, delay]);
-  return v;
-}
+type Item = { label: string; iata: string };
 
 export default function AutocompleteInput({
   label,
-  placeholder = 'Escribe ciudad o aeropuerto…',
+  placeholder,
   value,
-  onChangeValue,
-  onSelectItem,
-  fetcher,
-  minChars = 2,
-  disabled
-}: Props) {
+  onChange
+}: {
+  label?: string;
+  placeholder?: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
   const [open, setOpen] = useState(false);
-  const [items, setItems] = useState<AutocompleteItem[]>([]);
-  const [loading, setLoading] = useState(false);
-  const debouncedQuery = useDebounced(value, 350);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [q, setQ] = useState(value ?? '');
+  const [items, setItems] = useState<Item[]>([]);
+  const ref = useRef<HTMLDivElement>(null);
 
+  // Cierra dropdown al hacer click fuera
   useEffect(() => {
-    if (!debouncedQuery || debouncedQuery.trim().length < minChars) {
-      setItems([]);
-      return;
-    }
-    let isActive = true;
-    setLoading(true);
-    fetcher(debouncedQuery.trim())
-      .then((res) => {
-        if (isActive) setItems(res);
-      })
-      .catch(() => {
-        if (isActive) setItems([]);
-      })
-      .finally(() => {
-        if (isActive) setLoading(false);
-      });
-    return () => {
-      isActive = false;
+    const h = (ev: MouseEvent) => {
+      if (!ref.current?.contains(ev.target as Node)) setOpen(false);
     };
-  }, [debouncedQuery, fetcher, minChars]);
-
-  useEffect(() => {
-    const handler = (ev: MouseEvent) => {
-      if (!containerRef.current?.contains(ev.target as Node)) setOpen(false);
-    };
-    document.addEventListener('click', handler);
-    return () => document.removeEventListener('click', handler);
+    document.addEventListener('click', h);
+    return () => document.removeEventListener('click', h);
   }, []);
 
-  const showList = open && (loading || items.length > 0);
+  // Debounce fetch
+  useEffect(() => {
+    const t = setTimeout(async () => {
+      if (q && q.trim().length >= 2) {
+        try {
+          const res = await autocompleteAirports(q.trim());
+          setItems(res);
+          setOpen(true);
+        } catch {
+          setItems([]);
+          setOpen(false);
+        }
+      } else {
+        setItems([]);
+        setOpen(false);
+      }
+    }, 300);
+    return () => clearTimeout(t);
+  }, [q]);
 
-  const handleSelect = (it: AutocompleteItem) => {
-    onChangeValue(it.name);
+  const commit = (val: string) => {
+    onChange(val);
+    setQ(val);
     setOpen(false);
-    onSelectItem?.(it);
   };
 
   return (
-    <div className="relative" ref={containerRef}>
+    <div ref={ref} className="relative">
       {label && <label className="block text-sm font-medium mb-1">{label}</label>}
       <input
-        className="w-full border border-gray-300 rounded px-3 py-2 outline-none focus:ring-2 focus:ring-primary"
+        className="w-full border rounded px-3 py-2 outline-none focus:ring-2 focus:ring-primary"
         placeholder={placeholder}
-        value={value}
-        onFocus={() => setOpen(true)}
-        onChange={(e) => onChangeValue(e.target.value)}
-        disabled={disabled}
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        onFocus={() => { if (items.length > 0) setOpen(true); }}
       />
-      {showList && (
-        <div className="absolute z-40 mt-1 w-full max-h-60 overflow-auto bg-white border border-gray-200 rounded shadow">
-          {loading && <div className="px-3 py-2 text-sm text-gray-500">Buscando…</div>}
-          {!loading && items.length === 0 && (
-            <div className="px-3 py-2 text-sm text-gray-500">Sin resultados</div>
-          )}
-          {!loading &&
-            items.map((it) => (
-              <button
-                key={it.id}
-                onClick={() => handleSelect(it)}
-                className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
-              >
-                <div className="font-medium">{it.name}</div>
-                {it.code && <div className="text-gray-500 text-xs">Código: {it.code}</div>}
-              </button>
-            ))}
-        </div>
-      )}
+      <div className={clsx(
+        "absolute z-50 mt-1 w-full bg-white border rounded shadow",
+        open ? "block" : "hidden"
+      )}>
+        {items.length === 0 ? (
+          <div className="px-3 py-2 text-sm text-gray-500">Sin sugerencias</div>
+        ) : items.map((it, idx) => (
+          <button
+            key={idx}
+            type="button"
+            onClick={() => commit(it.label)} // enviamos la etiqueta completa, el backend extrae (IATA)
+            className="w-full text-left px-3 py-2 hover:bg-gray-50"
+          >
+            {it.label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 package com.aerotickets.controller;
 
 import com.aerotickets.dto.FlightDTO;
+import com.aerotickets.dto.FlightSearchDTO;
 import com.aerotickets.entity.Flight;
 import com.aerotickets.service.FlightService;
 import jakarta.validation.Valid;
@@ -16,9 +17,7 @@ public class FlightController {
     public FlightController(FlightService flightService){ this.flightService = flightService; }
 
     @GetMapping
-    public List<Flight> listAll() {
-        return flightService.listAll();
-    }
+    public List<Flight> listAll() { return flightService.listAll(); }
 
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody FlightDTO dto) {
@@ -31,7 +30,11 @@ public class FlightController {
                 .totalSeats(dto.getTotalSeats())
                 .price(dto.getPrice())
                 .build();
-        Flight saved = flightService.create(f);
-        return ResponseEntity.ok(saved);
+        return ResponseEntity.ok(flightService.create(f));
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<List<Flight>> search(@RequestBody FlightSearchDTO dto) {
+        return ResponseEntity.ok(flightService.searchOrSimulate(dto));
     }
 }
