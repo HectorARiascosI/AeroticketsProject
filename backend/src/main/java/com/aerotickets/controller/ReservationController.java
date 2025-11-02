@@ -23,23 +23,17 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponseDTO> create(Authentication auth,
                                                          @Valid @RequestBody ReservationRequestDTO dto) {
-        String email = auth.getName();
-        return ResponseEntity.ok(service.create(email, dto));
+        return ResponseEntity.ok(service.create(auth.getName(), dto));
     }
 
     @GetMapping("/my")
     public List<ReservationResponseDTO> myReservations(Authentication auth) {
-        String email = auth.getName();
-        System.out.println("🎟 Solicitando reservas de: " + email);
-        return service.listMine(email);
+        return service.listMine(auth.getName());
     }
 
-    // Alias para compatibilidad con /me
     @GetMapping("/me")
     public List<ReservationResponseDTO> myReservationsAlias(Authentication auth) {
-        String email = auth.getName();
-        System.out.println("🎟 (Alias /me) Solicitando reservas de: " + email);
-        return service.listMine(email);
+        return service.listMine(auth.getName());
     }
 
     @DeleteMapping("/{id}")

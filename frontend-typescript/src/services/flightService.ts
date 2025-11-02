@@ -1,4 +1,3 @@
-// src/services/flightService.ts
 import axios from "axios";
 
 export interface Flight {
@@ -26,20 +25,27 @@ export interface Flight {
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
 
-// ✅ Esta función debe estar exportada
+function normalize(text: string) {
+  return (text || "")
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .trim();
+}
+
+// ✅ Envío robusto y compatible con el backend
 export async function searchFlights(origin: string, destination: string, date: string) {
-  const payload = { origin, destination, date };
+  const payload = {
+    origin: origin.trim(),        // no convertir a minúsculas ni normalizar
+    destination: destination.trim(),
+    date: date || new Date().toISOString().split("T")[0]
+  };
+
   try {
-    const [realRes, simRes] = await Promise.allSettled([
-      axios.post(`${API}/flights/search`, payload),
-      axios.post(`${API}/live/flights/search`, payload),
-    ]);
-
-    const realFlights = realRes.status === "fulfilled" ? realRes.value.data : [];
-    const simFlights = simRes.status === "fulfilled" ? simRes.value.data : [];
-
-    const merged = [...realFlights, ...simFlights];
-    return merged.sort(
+    const { data } = await axios.post(`${API}/live/flights/search`, payload, {
+      headers: { "Content-Type": "application/json" },
+    });
+    const flights: Flight[] = Array.isArray(data) ? data : [];
+    return flights.sort(
       (a, b) =>
         new Date(a.departureAt).getTime() - new Date(b.departureAt).getTime()
     );
@@ -50,13 +56,21 @@ export async function searchFlights(origin: string, destination: string, date: s
 }
 
 export async function autocompleteAirports(query: string) {
-  if (!query || query.length < 2) return [];
+  const q = normalize(query);
+  if (!q || q.length < 2) return [];
   try {
-    const res = await axios.get(`${API}/live/airports/search`, {
-      params: { query },
+    const { data } = await axios.get(`${API}/live/airports/search`, {
+      params: { query: q },
     });
-    return res.data || [];
-  } catch {
+    return Array.isArray(data)
+      ? data.map((a: any) => ({
+          iata: a.iata,
+          city: a.city,
+          label: `${a.city} (${a.iata}) - ${a.airport}`
+        }))
+      : [];
+  } catch (e) {
+    console.error("Error loading airports:", e);
     return [];
   }
 }

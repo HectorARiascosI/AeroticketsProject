@@ -8,13 +8,12 @@ export async function getMyReservations(): Promise<ReservationDTO[]> {
 }
 
 export async function createReservation(flightId: number, seatNumber?: number) {
-  const payload: any = { flightId };
-  if (seatNumber) payload.seatNumber = seatNumber;
+  const payload: Record<string, unknown> = { flightId };
+  if (typeof seatNumber === "number") payload.seatNumber = seatNumber;
   const { data } = await api.post(ENDPOINTS.RESERVATIONS.BASE, payload);
   return data;
 }
 
 export async function cancelReservation(id: number) {
-  const { data } = await api.delete(`${ENDPOINTS.RESERVATIONS.BASE}/${id}`);
-  return data;
+  await api.delete(`${ENDPOINTS.RESERVATIONS.BASE}/${id}`);
 }

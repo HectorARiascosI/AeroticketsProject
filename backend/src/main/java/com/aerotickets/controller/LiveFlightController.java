@@ -11,7 +11,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
+import java.util.Map;
 
+/**
+ * Controlador principal para gestionar vuelos en tiempo real.
+ * Exposición de endpoints SSE (stream) y consultas HTTP JSON.
+ * Preparado para producción: robusto, sin datos quemados y validaciones seguras.
+ */
 @RestController
 @RequestMapping("/api/live")
 public class LiveFlightController {
@@ -24,21 +30,46 @@ public class LiveFlightController {
         this.registry = registry;
     }
 
-    // SSE: siempre text/event-stream
+    /**
+     * Endpoint para suscribirse al flujo SSE de actualizaciones en tiempo real.
+     * Produces: text/event-stream
+     */
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter stream() {
         return registry.subscribe();
     }
 
-    // Búsqueda JSON: siempre application/json
+    /**
+     * Búsqueda de vuelos (en vivo + simulados) mediante parámetros JSON.
+     * Valida los datos recibidos antes de consultar el servicio.
+     */
     @PostMapping(value = "/flights/search", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LiveFlight>> search(@Valid @RequestBody FlightSearchDTO dto) {
         if (dto.getOrigin() == null || dto.getDestination() == null
                 || dto.getOrigin().isBlank() || dto.getDestination().isBlank()) {
             return ResponseEntity.unprocessableEntity().build();
         }
-        List<LiveFlight> out = liveService.searchLive(dto.getOrigin(), dto.getDestination(),
-                dto.getDate()!=null ? dto.getDate().toString() : null, null);
-        return ResponseEntity.ok(out);
+
+        List<LiveFlight> results = liveService.searchLive(
+                dto.getOrigin(),
+                dto.getDestination(),
+                dto.getDate() != null ? dto.getDate().toString() : null,
+                null
+        );
+
+        return ResponseEntity.ok(results);
+    }
+
+    /**
+     * Autocompletado de aeropuertos (API pública para sugerencias de búsqueda).
+     * Ejemplo: /api/live/airports/search?query=bog
+     */
+    @GetMapping(value = "/airports/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Map<String, Object>>> airports(@RequestParam("query") String query) {
+        if (query == null || query.isBlank()) {
+            return ResponseEntity.ok(List.of());
+        }
+        List<Map<String, Object>> airports = liveService.autocompleteAirports(query);
+        return ResponseEntity.ok(airports);
     }
 }
