@@ -1,6 +1,7 @@
 package com.aerotickets.service;
 
 import com.aerotickets.model.LiveFlight;
+import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -67,25 +68,31 @@ public class SimulationRegistry {
 
     // SSE
     public SseEmitter subscribe() {
+        // timeout "infinito": el contenedor lo puede cerrar igual por inactividad
         SseEmitter emitter = new SseEmitter(0L);
         subscribers.add(emitter);
         emitter.onCompletion(() -> subscribers.remove(emitter));
         emitter.onTimeout(() -> subscribers.remove(emitter));
         try {
-            emitter.send(SseEmitter.event().name("snapshot").data(list()));
+            // Enviamos un primer snapshot como JSON explícito
+            emitter.send(SseEmitter.event()
+                    .name("snapshot")
+                    .data(list(), MediaType.APPLICATION_JSON));
         } catch (Exception ignored) {}
         return emitter;
     }
 
     private void broadcastSnapshot() {
-        Iterator<SseEmitter> it = subscribers.iterator();
         List<LiveFlight> snapshot = list();
-        while (it.hasNext()) {
-            SseEmitter em = it.next();
+        // iterar sobre una COPIA para poder remover con seguridad
+        for (SseEmitter em : new ArrayList<>(subscribers)) {
             try {
-                em.send(SseEmitter.event().name("snapshot").data(snapshot));
+                em.send(SseEmitter.event()
+                        .name("snapshot")
+                        .data(snapshot, MediaType.APPLICATION_JSON));
             } catch (Exception e) {
-                it.remove();
+                // remover fuera del iterador
+                subscribers.remove(em);
             }
         }
     }

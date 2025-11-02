@@ -1,30 +1,62 @@
-import api from '@/api/client';
+// src/services/flightService.ts
+import axios from "axios";
 
-export type LiveSearchParams = {
+export interface Flight {
+  airline: string;
+  flightNumber?: string;
   origin: string;
-  destination?: string;
-  date?: string;           // yyyy-MM-dd
-  provider?: 'auto' | 'Aviationstack' | 'AeroDataBox';
-};
-
-export async function getFlights(filters: { origin?: string; destination?: string; date?: string; airline?: string }) {
-  const { data } = await api.get('/flights', { params: filters });
-  return data;
+  destination: string;
+  departureAt: string;
+  arrivalAt: string;
+  status?: string;
+  aircraftType?: string;
+  terminal?: string;
+  gate?: string;
+  baggageBelt?: string;
+  delayMinutes?: number;
+  diverted?: boolean;
+  emergency?: boolean;
+  totalSeats?: number;
+  occupiedSeats?: number;
+  cargoKg?: number;
+  boardingStartAt?: string;
+  boardingEndAt?: string;
+  price?: number;
 }
 
-export async function searchLiveFlights(params: LiveSearchParams) {
-  const { data } = await api.get('/live/flights/search', {
-    params: {
-      origin: params.origin,
-      destination: params.destination,
-      date: params.date,
-      provider: params.provider ?? 'auto'
-    }
-  });
-  return data as { source: string; count: number; items: any[] };
+const API = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+
+// ✅ Esta función debe estar exportada
+export async function searchFlights(origin: string, destination: string, date: string) {
+  const payload = { origin, destination, date };
+  try {
+    const [realRes, simRes] = await Promise.allSettled([
+      axios.post(`${API}/flights/search`, payload),
+      axios.post(`${API}/live/flights/search`, payload),
+    ]);
+
+    const realFlights = realRes.status === "fulfilled" ? realRes.value.data : [];
+    const simFlights = simRes.status === "fulfilled" ? simRes.value.data : [];
+
+    const merged = [...realFlights, ...simFlights];
+    return merged.sort(
+      (a, b) =>
+        new Date(a.departureAt).getTime() - new Date(b.departureAt).getTime()
+    );
+  } catch (err) {
+    console.error("Error fetching flights:", err);
+    return [];
+  }
 }
 
 export async function autocompleteAirports(query: string) {
-  const { data } = await api.get('/live/autocomplete', { params: { query } });
-  return data as { label: string; iata: string }[];
+  if (!query || query.length < 2) return [];
+  try {
+    const res = await axios.get(`${API}/live/airports/search`, {
+      params: { query },
+    });
+    return res.data || [];
+  } catch {
+    return [];
+  }
 }

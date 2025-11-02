@@ -27,7 +27,7 @@ public class LiveFlightService {
         return simulator.search(dto);
     }
 
-    public List<Map<String,Object>> autocompleteAirports(String query) {
+    public List<Map<String, Object>> autocompleteAirports(String query) {
         return simulator.autocompleteAirports(query);
     }
 }

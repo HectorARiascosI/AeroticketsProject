@@ -15,8 +15,14 @@ import java.util.*;
 public class FlightSimulatorService {
 
     private static final DateTimeFormatter ISO = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-    private static final List<String> AIRLINES = List.of("Avianca","LATAM Airlines","SATENA","Ultra Air (sim)","Viva (sim)");
-    private static final Map<String,String> CODE = Map.of("Avianca","AV","LATAM Airlines","LA","SATENA","9R","Ultra Air (sim)","UL","Viva (sim)","VH");
+    private static final List<String> AIRLINES = List.of("Avianca", "LATAM Airlines", "SATENA", "Ultra Air (sim)", "Viva (sim)");
+    private static final Map<String, String> CODE = Map.of(
+            "Avianca", "AV",
+            "LATAM Airlines", "LA",
+            "SATENA", "9R",
+            "Ultra Air (sim)", "UL",
+            "Viva (sim)", "VH"
+    );
     private static final String[] TYPES = AircraftCatalog.types();
     private static final String[] GATES = genGates();
 
@@ -32,9 +38,10 @@ public class FlightSimulatorService {
         if (query == null || query.isBlank()) return List.of();
         String q = IataResolver.normalize(query);
         List<Map<String, Object>> out = new ArrayList<>();
+
         for (String iata : AirportCatalog.keys()) {
             AirportCatalog.AirportInfo a = AirportCatalog.get(iata);
-            String normCity = com.aerotickets.util.IataResolver.normalize(a.city);
+            String normCity = IataResolver.normalize(a.city);
             if (iata.toLowerCase(Locale.ROOT).contains(q) || normCity.contains(q)) {
                 out.add(Map.of(
                         "iata", a.iata,
@@ -43,7 +50,7 @@ public class FlightSimulatorService {
                 ));
             }
         }
-        return out.size() > 12 ? out.subList(0,12) : out;
+        return out.size() > 12 ? out.subList(0, 12) : out;
     }
 
     public List<LiveFlight> search(FlightSearchDTO dto) {
@@ -60,8 +67,7 @@ public class FlightSimulatorService {
         if (aDep == null || aArr == null) return List.of();
 
         double distKm = GeoUtil.haversineKm(aDep.lat, aDep.lon, aArr.lat, aArr.lon);
-
-        int flights = 6 + rnd.nextInt(6); // 6-11
+        int flights = 6 + rnd.nextInt(6);
         List<LiveFlight> out = new ArrayList<>(flights);
 
         for (int i = 0; i < flights; i++) {
@@ -70,78 +76,63 @@ public class FlightSimulatorService {
             String type = TYPES[rnd.nextInt(TYPES.length)];
             AircraftCatalog.Aircraft ac = AircraftCatalog.any(type);
 
-            // Slot de salida verosímil
             int startHour = 5 + rnd.nextInt(17);
-            int minute = (rnd.nextInt(6))*10;
-            LocalTime depTime = LocalTime.of(startHour, minute);
-            LocalDateTime departure = LocalDateTime.of(date, depTime);
+            int minute = rnd.nextInt(6) * 10;
+            LocalDateTime departure = LocalDateTime.of(date, LocalTime.of(startHour, minute));
 
-            // Duración por distancia y velocidad crucero + márgenes (rodajes, ascenso/descenso)
             int blockMinutes = estimateBlockMinutes(distKm, ac.cruiseKmh, rnd);
             LocalDateTime arrival = departure.plusMinutes(blockMinutes);
 
-            // Clima origen/destino y su impacto
-            WeatherSimulator.WX wxDep = weather.weatherFor(dep, date, depTime);
-            WeatherSimulator.WX wxArr = weather.weatherFor(arr, date, depTime.plusMinutes(blockMinutes));
+            WeatherSimulator.WX wxDep = weather.weatherFor(dep, date, departure.toLocalTime());
+            WeatherSimulator.WX wxArr = weather.weatherFor(arr, date, arrival.toLocalTime());
             int wxDelay = Math.max(weather.delayFrom(wxDep), weather.delayFrom(wxArr));
 
-            // Disrupciones por hora punta/tipo aeronave/distancia
-            DisruptionEngine.Disruption d = disruptor.compute(depTime, wxDelay, type, (int) Math.round(distKm),
-                    Objects.hash(dep,arr,date.toString(),i));
+            DisruptionEngine.Disruption d = disruptor.compute(departure.toLocalTime(), wxDelay, type, (int) distKm, seed + i);
+            int delay = Math.max(0, wxDelay + (d.extraDelay != null ? d.extraDelay : 0));
 
-            Integer delay = (wxDelay + (d.extraDelay!=null?d.extraDelay:0));
-            if (delay != null && delay < 0) delay = 0;
-
-            LocalDateTime depFinal = departure.plusMinutes(delay!=null?delay:0);
-            LocalDateTime arrFinal = arrival.plusMinutes(delay!=null?delay:0);
-
+            LocalDateTime depFinal = departure.plusMinutes(delay);
+            LocalDateTime arrFinal = arrival.plusMinutes(delay);
             String status = statusFor(depFinal, arrFinal);
 
-            // Ocupación/carga
-            int baseLoad = 60 + rnd.nextInt(36);
-            int occupied = Math.min(ac.capacity, (int)Math.round(ac.capacity * baseLoad / 100.0));
+            int occupied = (int) (ac.capacity * (0.65 + rnd.nextDouble() * 0.3));
             int cargoKg = estimateCargoKg(type, occupied, rnd);
 
             LiveFlight lf = new LiveFlight("simulator", airline, code + (100 + rnd.nextInt(900)),
                     dep, arr, depFinal.format(ISO), arrFinal.format(ISO), status);
-
             lf.setAircraftType(type);
             lf.setTerminal(rnd.nextBoolean() ? "T1" : "T2");
             lf.setGate(GATES[rnd.nextInt(GATES.length)]);
             lf.setBaggageBelt(String.valueOf(1 + rnd.nextInt(8)));
-            lf.setDelayMinutes(delay!=null && delay>0 ? delay : null);
+            lf.setDelayMinutes(delay > 0 ? delay : null);
             lf.setDiverted(d.diverted);
             lf.setEmergency(d.emergency);
             lf.setTotalSeats(ac.capacity);
             lf.setOccupiedSeats(occupied);
             lf.setCargoKg(cargoKg);
-            lf.setBoardingStartAt(depFinal.minusMinutes(25 + rnd.nextInt(16)).format(ISO));
+            lf.setBoardingStartAt(depFinal.minusMinutes(20 + rnd.nextInt(10)).format(ISO));
             lf.setBoardingEndAt(depFinal.minusMinutes(5 + rnd.nextInt(8)).format(ISO));
 
             out.add(lf);
         }
 
         out.sort(Comparator.comparing(LiveFlight::getDepartureAt));
-        // Cargar al registro vivo (para /stream y /status)
         registry.putAll(out);
         return out;
     }
 
     private static String[] genGates() {
         List<String> g = new ArrayList<>();
-        for (char c='A'; c<='D'; c++) {
-            for (int n=1;n<=24;n++) g.add(c+String.valueOf(n));
+        for (char c = 'A'; c <= 'D'; c++) {
+            for (int n = 1; n <= 24; n++) g.add(c + String.valueOf(n));
         }
         return g.toArray(new String[0]);
     }
 
     private int estimateBlockMinutes(double distKm, int cruiseKmh, Random rnd) {
-        // block time = crucero + 20-35 min (rodajes/esperas)
         double cruiseHours = distKm / Math.max(400, cruiseKmh);
         int taxi = 20 + rnd.nextInt(16);
         int jitter = rnd.nextInt(9) - 4;
-        int total = (int)Math.round(cruiseHours*60) + taxi + jitter;
-        return Math.max(total, 40);
+        return Math.max((int) Math.round(cruiseHours * 60) + taxi + jitter, 40);
     }
 
     private int estimateCargoKg(String type, int pax, Random rnd) {
@@ -155,7 +146,7 @@ public class FlightSimulatorService {
             default -> 4000;
         };
         int factor = 35 + rnd.nextInt(46);
-        return Math.min(belly, paxBags + (belly*factor/100));
+        return Math.min(belly, paxBags + (belly * factor / 100));
     }
 
     private String statusFor(LocalDateTime dep, LocalDateTime arr) {

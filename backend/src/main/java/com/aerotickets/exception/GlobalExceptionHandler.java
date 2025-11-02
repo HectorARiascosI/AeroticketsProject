@@ -12,6 +12,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
+    @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> handleNotFound(NotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
                 "message", ex.getMessage()
@@ -19,6 +20,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ConflictException.class)
+    @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> handleConflict(ConflictException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
                 "message", ex.getMessage()
@@ -26,6 +28,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
+    @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> handleBadRequest(IllegalArgumentException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
                 "message", ex.getMessage()
@@ -33,6 +36,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
+    @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> handleIntegrity(DataIntegrityViolationException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
                 "message", "Conflicto de datos. " + ex.getMostSpecificCause().getMessage()
@@ -40,6 +44,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
+    @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> handleValidation(MethodArgumentNotValidException ex) {
         var errors = new HashMap<String, String>();
         ex.getBindingResult().getFieldErrors().forEach(e -> errors.put(e.getField(), e.getDefaultMessage()));
@@ -50,10 +55,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
+    @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> handleGeneric(Exception ex) {
+        // No exponemos stacktrace por seguridad en prod; si quieres, agrega el detalle con un flag de perfil
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
-                "message", "Error inesperado",
-                "detail", ex.getMessage()
+                "message", "Error inesperado"
         ));
     }
 }
