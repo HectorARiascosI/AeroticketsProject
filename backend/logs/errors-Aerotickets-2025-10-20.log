@@ -1,9 +1,0 @@
-2025-10-20 13:57:37 | ERROR | o.h.e.jdbc.spi.SqlExceptionHelper | Duplicate entry '2-3-ACTIVE' for key 'reservations.uk_res_flight_user_active'
-2025-10-20 13:58:15 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/reservations/my - 500 (104 ms)[0m
-2025-10-20 13:58:15 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/reservations/my - 500 (56 ms)[0m
-2025-10-20 14:00:38 | ERROR | o.h.e.jdbc.spi.SqlExceptionHelper | Duplicate entry '1-3-ACTIVE' for key 'reservations.uk_res_flight_user_active'
-2025-10-20 14:26:35 | ERROR | o.h.e.jdbc.spi.SqlExceptionHelper | Duplicate entry '2-3-ACTIVE' for key 'reservations.uk_res_flight_user_active'
-2025-10-20 14:26:38 | ERROR | o.h.e.jdbc.spi.SqlExceptionHelper | Duplicate entry '1-3-ACTIVE' for key 'reservations.uk_res_flight_user_active'
-2025-10-20 14:26:46 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/reservations/my - 500 (24 ms)[0m
-2025-10-20 14:26:46 | ERROR | c.a.config.PerformanceLoggingFilter | [0;31m➡️ GET /api/reservations/my - 500 (76 ms)[0m
-2025-10-20 15:45:23 | ERROR | o.h.e.jdbc.spi.SqlExceptionHelper | Duplicate entry '2-3-ACTIVE' for key 'reservations.uk_res_flight_user_active'

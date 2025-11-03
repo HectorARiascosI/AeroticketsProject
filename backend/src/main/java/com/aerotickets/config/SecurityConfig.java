@@ -27,11 +27,11 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/live/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/flights/**").permitAll()
-                        .anyRequest().authenticated()
-                )
+                	    .requestMatchers("/auth/**").permitAll()
+                	    .requestMatchers("/live/**").permitAll()
+                	    .requestMatchers(HttpMethod.GET, "/flights/**").permitAll()
+                	    .anyRequest().authenticated()
+                	)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

@@ -36,12 +36,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull FilterChain chain
     ) throws ServletException, IOException {
 
-        // ✅ Permitir rutas públicas sin token
-        String path = request.getRequestURI();
-        if (path.startsWith("/api/auth/") || path.startsWith("/swagger") || path.startsWith("/v3/api-docs")) {
-            chain.doFilter(request, response);
-            return;
-        }
+    	// Antes:
+    	// String path = request.getRequestURI();
+
+    	// Después:
+    	String path = request.getServletPath();
+
+    	// Y ajusta el if de rutas públicas:
+    	if (path.startsWith("/auth") || path.startsWith("/swagger") || path.startsWith("/v3/api-docs")) {
+    	    chain.doFilter(request, response);
+    	    return;
+    	}
 
         final String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {

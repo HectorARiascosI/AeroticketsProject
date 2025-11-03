@@ -3,15 +3,15 @@ export const ENDPOINTS = {
     LOGIN: '/auth/login',
     REGISTER: '/auth/register',
     FORGOT: '/auth/forgot-password',
-    RESET: '/auth/reset-password'
+    RESET: '/auth/reset-password',
   },
   FLIGHTS: '/flights',
   LIVE: {
-    AIRPORTS_SEARCH: '/live/airports/search', // ?q=term
-    SEARCH: '/live/flights/search'            // ?origin=bogota&destination=medellin | ?origin=BOG
+    AIRPORTS_SEARCH: '/live/airports/search',
+    SEARCH: '/live/flights/search',
   },
   RESERVATIONS: {
     BASE: '/reservations',
-    MINE: '/reservations/my'
-  }
+    MINE: '/reservations/my',
+  },
 } as const

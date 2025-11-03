@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
  *  - POST /api/auth/login
  */
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RequiredArgsConstructor
 public class AuthController {
