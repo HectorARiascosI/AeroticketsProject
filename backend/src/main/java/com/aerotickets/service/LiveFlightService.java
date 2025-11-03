@@ -2,7 +2,7 @@ package com.aerotickets.service;
 
 import com.aerotickets.dto.FlightSearchDTO;
 import com.aerotickets.model.LiveFlight;
-import com.aerotickets.sim.AirportCatalog;
+import com.aerotickets.sim.AirportCatalogCO;
 import com.aerotickets.util.IataResolver;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +11,8 @@ import java.util.*;
 
 /**
  * Servicio de búsqueda de vuelos en tiempo real.
- * Incluye:
- *  - Conversión inteligente de texto natural a código IATA.
- *  - Autocompletado semántico de aeropuertos.
- *  - Validaciones robustas para uso en producción.
+ * Compatible con la simulación realista de aeropuertos (AirportCatalogCO).
+ * Mantiene autocompletado y conversión natural → IATA.
  */
 @Service
 public class LiveFlightService {
@@ -51,21 +49,24 @@ public class LiveFlightService {
     }
 
     /**
-     * Retorna sugerencias de aeropuertos en base a texto ingresado (autocomplete).
+     * Autocompletado de aeropuertos según texto parcial o nombre.
      */
     public List<Map<String, Object>> autocompleteAirports(String query) {
         if (query == null || query.isBlank()) return List.of();
         query = IataResolver.normalize(query);
 
         List<Map<String, Object>> results = new ArrayList<>();
-        for (String iata : AirportCatalog.keys()) {
-            AirportCatalog.AirportInfo info = AirportCatalog.get(iata);
+        for (String iata : AirportCatalogCO.keys()) {
+            AirportCatalogCO.Airport info = AirportCatalogCO.get(iata);
             if (matches(info, query)) {
                 Map<String, Object> item = new HashMap<>();
-                item.put("iata", iata);
+                item.put("iata", info.iata);
                 item.put("city", info.city);
-                item.put("country", info.country);
                 item.put("airport", info.name);
+                item.put("terrain", info.terrain);
+                item.put("runway_m", info.runwayLenM);
+                item.put("elevation_ft", info.elevationFt);
+                item.put("allowed_families", info.allowedFamilies);
                 results.add(item);
             }
         }
@@ -76,17 +77,16 @@ public class LiveFlightService {
     /**
      * Determina si una entrada de aeropuerto coincide parcialmente con la consulta del usuario.
      */
-    private boolean matches(AirportCatalog.AirportInfo info, String query) {
+    private boolean matches(AirportCatalogCO.Airport info, String query) {
         String city = IataResolver.normalize(info.city);
-        String country = IataResolver.normalize(info.country);
         String name = IataResolver.normalize(info.name);
-        String iata = info.iata.toLowerCase(Locale.ROOT); // ✅ cambiado aquí
+        String iata = info.iata.toLowerCase(Locale.ROOT);
+        String terrain = IataResolver.normalize(info.terrain);
 
         return iata.contains(query)
                 || city.contains(query)
                 || name.contains(query)
-                || country.contains(query);
-    
+                || terrain.contains(query);
     }
 
     /**
@@ -98,7 +98,6 @@ public class LiveFlightService {
     private String smartToIata(String input) {
         if (input == null || input.isBlank()) return null;
 
-        // Primero, intenta con el resolver centralizado
         String resolved = IataResolver.toIata(input);
         if (resolved != null) return resolved;
 
@@ -106,19 +105,17 @@ public class LiveFlightService {
         String best = null;
         int bestScore = Integer.MAX_VALUE;
 
-        for (String iata : AirportCatalog.keys()) {
-            AirportCatalog.AirportInfo a = AirportCatalog.get(iata);
+        for (String iata : AirportCatalogCO.keys()) {
+            AirportCatalogCO.Airport a = AirportCatalogCO.get(iata);
             String city = IataResolver.normalize(a.city);
             String name = IataResolver.normalize(a.name);
 
-            // Coincidencia directa
             if (normalized.equals(iata.toLowerCase(Locale.ROOT))
                     || normalized.equals(city)
                     || normalized.equals(name)) {
                 return iata;
             }
 
-            // Coincidencia por proximidad
             int score = levenshtein(normalized, city);
             if (score < bestScore) {
                 bestScore = score;
@@ -126,12 +123,11 @@ public class LiveFlightService {
             }
         }
 
-        // Solo acepta coincidencias razonables
         return bestScore <= Math.max(2, normalized.length() / 2) ? best : null;
     }
 
     /**
-     * Calcula la distancia de Levenshtein (mínimo número de ediciones entre dos palabras).
+     * Distancia de Levenshtein (mínimo número de ediciones entre dos palabras).
      */
     private int levenshtein(String a, String b) {
         int n = a.length(), m = b.length();

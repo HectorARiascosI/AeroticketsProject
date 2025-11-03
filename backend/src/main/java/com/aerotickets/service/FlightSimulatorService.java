@@ -3,7 +3,6 @@ package com.aerotickets.service;
 import com.aerotickets.dto.FlightSearchDTO;
 import com.aerotickets.model.LiveFlight;
 import com.aerotickets.sim.*;
-import com.aerotickets.util.GeoUtil;
 import com.aerotickets.util.IataResolver;
 import org.springframework.stereotype.Service;
 
@@ -15,42 +14,20 @@ import java.util.*;
 public class FlightSimulatorService {
 
     private static final DateTimeFormatter ISO = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-    private static final List<String> AIRLINES = List.of("Avianca", "LATAM Airlines", "SATENA", "Ultra Air (sim)", "Viva (sim)");
-    private static final Map<String, String> CODE = Map.of(
-            "Avianca", "AV",
-            "LATAM Airlines", "LA",
-            "SATENA", "9R",
-            "Ultra Air (sim)", "UL",
-            "Viva (sim)", "VH"
-    );
-    private static final String[] TYPES = AircraftCatalog.types();
-    private static final String[] GATES = genGates();
 
-    private final WeatherSimulator weather = new WeatherSimulator();
-    private final DisruptionEngine disruptor = new DisruptionEngine();
+    // Aerolíneas activas en CO (sin Ultra/Viva)
+    private static final Map<String, String> CARRIERS = Map.of(
+            "AV", "Avianca",
+            "LA", "LATAM Airlines",
+            "9R", "SATENA",
+            "VE", "CLIC (Regional)",
+            "P5", "Wingo"
+    );
+
     private final SimulationRegistry registry;
 
     public FlightSimulatorService(SimulationRegistry registry) {
         this.registry = registry;
-    }
-
-    public List<Map<String, Object>> autocompleteAirports(String query) {
-        if (query == null || query.isBlank()) return List.of();
-        String q = IataResolver.normalize(query);
-        List<Map<String, Object>> out = new ArrayList<>();
-
-        for (String iata : AirportCatalog.keys()) {
-            AirportCatalog.AirportInfo a = AirportCatalog.get(iata);
-            String normCity = IataResolver.normalize(a.city);
-            if (iata.toLowerCase(Locale.ROOT).contains(q) || normCity.contains(q)) {
-                out.add(Map.of(
-                        "iata", a.iata,
-                        "city", a.city,
-                        "label", a.city + " (" + a.iata + "), " + a.country
-                ));
-            }
-        }
-        return out.size() > 12 ? out.subList(0, 12) : out;
     }
 
     public List<LiveFlight> search(FlightSearchDTO dto) {
@@ -58,59 +35,81 @@ public class FlightSimulatorService {
         String arr = IataResolver.toIata(dto.getDestination());
         if (dep == null || arr == null || dep.equalsIgnoreCase(arr)) return List.of();
 
-        LocalDate date = dto.getDate() != null ? dto.getDate() : LocalDate.now();
-        int seed = Objects.hash(dep, arr, date.toString());
-        Random rnd = new Random(seed);
-
-        AirportCatalog.AirportInfo aDep = AirportCatalog.get(dep);
-        AirportCatalog.AirportInfo aArr = AirportCatalog.get(arr);
+        var aDep = AirportCatalogCO.get(dep);
+        var aArr = AirportCatalogCO.get(arr);
         if (aDep == null || aArr == null) return List.of();
 
-        double distKm = GeoUtil.haversineKm(aDep.lat, aDep.lon, aArr.lat, aArr.lon);
-        int flights = 6 + rnd.nextInt(6);
+        LocalDate date = dto.getDate() != null ? dto.getDate() : LocalDate.now();
+        int seed = Objects.hash(dep, arr, date);
+        Random rnd = new Random(seed);
+
+        ZoneId tz = ZoneId.of("America/Bogota");
+
+        // Clima del día
+        var wxDepDay = WeatherProfileCatalog.forAirportDay(aDep, date, rnd);
+        var wxArrDay = WeatherProfileCatalog.forAirportDay(aArr, date, rnd);
+
+        int flights = 5 + rnd.nextInt(4); // 5..8 vuelos simulados viables
         List<LiveFlight> out = new ArrayList<>(flights);
 
-        for (int i = 0; i < flights; i++) {
-            String airline = AIRLINES.get(rnd.nextInt(AIRLINES.size()));
-            String code = CODE.get(airline);
-            String type = TYPES[rnd.nextInt(TYPES.length)];
-            AircraftCatalog.Aircraft ac = AircraftCatalog.any(type);
+        int tries = 0;
+        while (out.size() < flights && tries < flights * 6) {
+            tries++;
 
-            int startHour = 5 + rnd.nextInt(17);
-            int minute = rnd.nextInt(6) * 10;
-            LocalDateTime departure = LocalDateTime.of(date, LocalTime.of(startHour, minute));
+            // Elige aerolínea válida para ambos aeropuertos
+            String carrier = pickCarrier(aDep, aArr, rnd);
+            if (carrier == null) continue;
 
-            int blockMinutes = estimateBlockMinutes(distKm, ac.cruiseKmh, rnd);
-            LocalDateTime arrival = departure.plusMinutes(blockMinutes);
+            // Elige tipo de aeronave permitido (en ambos)
+            String family = pickFamily(aDep, aArr, rnd);
+            if (family == null) continue;
 
-            WeatherSimulator.WX wxDep = weather.weatherFor(dep, date, departure.toLocalTime());
-            WeatherSimulator.WX wxArr = weather.weatherFor(arr, date, arrival.toLocalTime());
-            int wxDelay = Math.max(weather.delayFrom(wxDep), weather.delayFrom(wxArr));
+            // Programa un slot razonable
+            int startHour = 6 + rnd.nextInt(14); // 06..19
+            int minute = (rnd.nextInt(5) * 10);  // múltiplos de 10
+            LocalDateTime schedDep = LocalDateTime.of(date, LocalTime.of(startHour, minute));
+            LocalDateTime schedArr = schedDep.plusMinutes(estimateBlock(aDep, aArr, family, rnd));
 
-            DisruptionEngine.Disruption d = disruptor.compute(departure.toLocalTime(), wxDelay, type, (int) distKm, seed + i);
-            int delay = Math.max(0, wxDelay + (d.extraDelay != null ? d.extraDelay : 0));
+            // Temperatura simple por altitud (más alto => más frío)
+            int tempDep = Math.max(8, 24 - (aDep.elevationFt / 1000)); // conservador
+            int tempArr = Math.max(8, 24 - (aArr.elevationFt / 1000));
 
-            LocalDateTime depFinal = departure.plusMinutes(delay);
-            LocalDateTime arrFinal = arrival.plusMinutes(delay);
-            String status = statusFor(depFinal, arrFinal);
+            // Decide si es operable en salida y llegada
+            var decDep = RestrictionsEngine.canOperate(aDep, family, tempDep, wxDepDay, schedDep.toLocalTime());
+            if (!decDep.allowed) continue;
+            var decArr = RestrictionsEngine.canOperate(aArr, family, tempArr, wxArrDay, schedArr.toLocalTime());
+            if (!decArr.allowed) continue;
 
-            int occupied = (int) (ac.capacity * (0.65 + rnd.nextDouble() * 0.3));
-            int cargoKg = estimateCargoKg(type, occupied, rnd);
+            // Retrasos por clima/congestión
+            int delay = 0;
+            delay += wxPenalty(wxDepDay);
+            delay += wxPenalty(wxArrDay);
+            delay += ScheduleRules.congestionDelayMin(aDep, schedDep.toLocalTime());
+            delay += ScheduleRules.congestionDelayMin(aArr, schedArr.toLocalTime());
+            if (delay > 40) delay = 40; // top-out conservador
 
-            LiveFlight lf = new LiveFlight("simulator", airline, code + (100 + rnd.nextInt(900)),
-                    dep, arr, depFinal.format(ISO), arrFinal.format(ISO), status);
-            lf.setAircraftType(type);
+            LocalDateTime depFinal = schedDep.plusMinutes(delay);
+            LocalDateTime arrFinal = schedArr.plusMinutes(delay);
+            String status = nowStatus(depFinal, arrFinal, tz, delay);
+
+            String code = carrier + (100 + rnd.nextInt(900));
+            LiveFlight lf = new LiveFlight(
+                    "sim-co",
+                    CARRIERS.get(carrier),
+                    code,
+                    dep, arr,
+                    depFinal.format(ISO),
+                    arrFinal.format(ISO),
+                    status
+            );
+            lf.setAirlineCode(carrier);
+            lf.setAircraftType(family);
             lf.setTerminal(rnd.nextBoolean() ? "T1" : "T2");
-            lf.setGate(GATES[rnd.nextInt(GATES.length)]);
-            lf.setBaggageBelt(String.valueOf(1 + rnd.nextInt(8)));
+            lf.setGate(gateFor(aDep, rnd));
             lf.setDelayMinutes(delay > 0 ? delay : null);
-            lf.setDiverted(d.diverted);
-            lf.setEmergency(d.emergency);
-            lf.setTotalSeats(ac.capacity);
-            lf.setOccupiedSeats(occupied);
-            lf.setCargoKg(cargoKg);
-            lf.setBoardingStartAt(depFinal.minusMinutes(20 + rnd.nextInt(10)).format(ISO));
-            lf.setBoardingEndAt(depFinal.minusMinutes(5 + rnd.nextInt(8)).format(ISO));
+            lf.setTotalSeats(capacityFor(family));
+            lf.setOccupiedSeats((int)(lf.getTotalSeats() * (0.65 + rnd.nextDouble()*0.25)));
+            lf.setCargoKg(Math.max(0, lf.getOccupiedSeats()*12 + rnd.nextInt(1200)));
 
             out.add(lf);
         }
@@ -120,43 +119,83 @@ public class FlightSimulatorService {
         return out;
     }
 
-    private static String[] genGates() {
-        List<String> g = new ArrayList<>();
-        for (char c = 'A'; c <= 'D'; c++) {
-            for (int n = 1; n <= 24; n++) g.add(c + String.valueOf(n));
-        }
-        return g.toArray(new String[0]);
+    private String pickCarrier(AirportCatalogCO.Airport aDep, AirportCatalogCO.Airport aArr, Random rnd) {
+        var inter = new ArrayList<String>();
+        for (String c : aDep.allowedCarriers) if (aArr.allowedCarriers.contains(c)) inter.add(c);
+        if (inter.isEmpty()) return null;
+        return inter.get(rnd.nextInt(inter.size()));
     }
 
-    private int estimateBlockMinutes(double distKm, int cruiseKmh, Random rnd) {
-        double cruiseHours = distKm / Math.max(400, cruiseKmh);
-        int taxi = 20 + rnd.nextInt(16);
-        int jitter = rnd.nextInt(9) - 4;
-        return Math.max((int) Math.round(cruiseHours * 60) + taxi + jitter, 40);
+    private String pickFamily(AirportCatalogCO.Airport aDep, AirportCatalogCO.Airport aArr, Random rnd) {
+        var inter = new ArrayList<String>();
+        for (String f : aDep.allowedFamilies) if (aArr.allowedFamilies.contains(f)) inter.add(f);
+        if (inter.isEmpty()) return null;
+        return inter.get(rnd.nextInt(inter.size()));
     }
 
-    private int estimateCargoKg(String type, int pax, Random rnd) {
-        int paxBags = pax * (10 + rnd.nextInt(8));
-        int belly = switch (type) {
-            case "A321" -> 6000;
-            case "A320", "A320neo" -> 5000;
-            case "B737-800", "B737 MAX 8" -> 5200;
-            case "E190" -> 2500;
-            case "ATR 72-600" -> 1200;
-            default -> 4000;
+    private int estimateBlock(AirportCatalogCO.Airport aDep, AirportCatalogCO.Airport aArr, String family, Random rnd) {
+        // Distancia aproximada por coords (muy simple)
+        double dkm = haversineKm(aDep.lat, aDep.lon, aArr.lat, aArr.lon);
+        double cruiseKmh = switch (family) {
+            case "ATR 72-600" -> 480;
+            case "E190","E195" -> 780;
+            default -> 830;
         };
-        int factor = 35 + rnd.nextInt(46);
-        return Math.min(belly, paxBags + (belly * factor / 100));
+        double hours = dkm / Math.max(350, cruiseKmh);
+        int taxi = 15 + rnd.nextInt(10);
+        int jitter = rnd.nextInt(7) - 3;
+        return Math.max(40, (int)Math.round(hours*60) + taxi + jitter);
     }
 
-    private String statusFor(LocalDateTime dep, LocalDateTime arr) {
-        LocalDateTime now = LocalDateTime.now(ZoneId.of("America/Bogota"));
+    private int wxPenalty(WeatherProfileCatalog.Wx wx) {
+        int d = 0;
+        if (wx.heavyRain) d += 10 + (int)(Math.random()*10);
+        if (wx.fog) d += 8 + (int)(Math.random()*6);
+        if (wx.crosswindKts >= 22) d += 6;
+        return d;
+    }
+
+    private String nowStatus(LocalDateTime dep, LocalDateTime arr, ZoneId tz, int delay) {
+        LocalDateTime now = LocalDateTime.now(tz);
         if (now.isBefore(dep.minusMinutes(60))) return "SCHEDULED";
-        if (!now.isAfter(dep) && now.isAfter(dep.minusMinutes(60))) return "BOARDING";
-        if (now.isAfter(dep) && now.isBefore(arr)) return "EN-ROUTE";
+        if (!now.isAfter(dep) && now.isAfter(dep.minusMinutes(60))) return delay > 12 ? "DELAYED" : "BOARDING";
+        if (now.isAfter(dep) && now.isBefore(arr)) return delay > 12 ? "DELAYED" : "EN-ROUTE";
         return "LANDED";
     }
 
-    public String forceIata(String input) { return IataResolver.toIata(input); }
-    public Set<String> supportedIatas() { return AirportCatalog.keys(); }
+    private String gateFor(AirportCatalogCO.Airport ap, Random rnd) {
+        char base = switch (ap.city) {
+            case "Bogotá" -> 'A';
+            case "Rionegro/Medellín" -> 'B';
+            case "Cali" -> 'C';
+            case "Cartagena" -> 'D';
+            case "Pasto" -> 'E';
+            default -> 'F';
+        };
+        return base + String.valueOf(1 + rnd.nextInt(20));
+    }
+
+    private int capacityFor(String family) {
+        return switch (family) {
+            case "ATR 72-600" -> 70;
+            case "E190" -> 100;
+            case "E195" -> 118;
+            case "A319" -> 132;
+            case "A320","A320neo" -> 174;
+            case "A321" -> 220;
+            case "B737-800","B737 MAX 8" -> 186;
+            default -> 150;
+        };
+    }
+
+    private static double haversineKm(double lat1, double lon1, double lat2, double lon2) {
+        double R = 6371.0;
+        double dLat = Math.toRadians(lat2-lat1);
+        double dLon = Math.toRadians(lon2-lon1);
+        double a = Math.sin(dLat/2)*Math.sin(dLat/2) +
+                Math.cos(Math.toRadians(lat1))*Math.cos(Math.toRadians(lat2))*
+                        Math.sin(dLon/2)*Math.sin(dLon/2);
+        double c = 2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R*c;
+    }
 }
