@@ -11,7 +11,7 @@ import com.aerotickets.exception.NotFoundException;
 import com.aerotickets.repository.FlightRepository;
 import com.aerotickets.repository.ReservationRepository;
 import com.aerotickets.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -78,7 +78,6 @@ public class ReservationService {
             return toDto(saved);
 
         } catch (DataIntegrityViolationException ex) {
-            // Unique constraint (flight_id, user_id, status) or (flight_id, seat_number, status)
             throw new ConflictException("You already have an ACTIVE reservation for this flight or the seat is taken");
         }
     }
@@ -131,7 +130,7 @@ public class ReservationService {
         reservationRepository.save(r);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ReservationResponseDTO> listMine(String userEmail) {
         if (userEmail == null || userEmail.isBlank()) {
             throw new IllegalArgumentException("User email is required");

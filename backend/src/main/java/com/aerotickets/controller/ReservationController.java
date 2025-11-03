@@ -4,6 +4,7 @@ import com.aerotickets.dto.ReservationRequestDTO;
 import com.aerotickets.dto.ReservationResponseDTO;
 import com.aerotickets.service.ReservationService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/reservations")
+// IMPORTANTE: con server.servlet.context-path=/api, el base path aquí
+// NO debe volver a incluir /api. Déjalo en "/reservations".
+@RequestMapping("/reservations")
 public class ReservationController {
 
     private final ReservationService service;
@@ -23,22 +26,39 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponseDTO> create(Authentication auth,
                                                          @Valid @RequestBody ReservationRequestDTO dto) {
-        return ResponseEntity.ok(service.create(auth.getName(), dto));
+        String email = (auth != null) ? auth.getName() : null;
+        if (email == null || email.isBlank()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(service.create(email, dto));
     }
 
     @GetMapping("/my")
-    public List<ReservationResponseDTO> myReservations(Authentication auth) {
-        return service.listMine(auth.getName());
+    public ResponseEntity<List<ReservationResponseDTO>> myReservations(Authentication auth) {
+        String email = (auth != null) ? auth.getName() : null;
+        if (email == null || email.isBlank()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(service.listMine(email));
     }
 
+    // Alias opcional
     @GetMapping("/me")
-    public List<ReservationResponseDTO> myReservationsAlias(Authentication auth) {
-        return service.listMine(auth.getName());
+    public ResponseEntity<List<ReservationResponseDTO>> myReservationsAlias(Authentication auth) {
+        String email = (auth != null) ? auth.getName() : null;
+        if (email == null || email.isBlank()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(service.listMine(email));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> cancel(Authentication auth, @PathVariable Long id) {
-        service.cancel(auth.getName(), id);
+        String email = (auth != null) ? auth.getName() : null;
+        if (email == null || email.isBlank()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        service.cancel(email, id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -16,10 +16,9 @@ import java.util.Map;
 /**
  * Controlador principal para gestionar vuelos en tiempo real.
  * Exposición de endpoints SSE (stream) y consultas HTTP JSON.
- * Preparado para producción: robusto, sin datos quemados y validaciones seguras.
  */
 @RestController
-@RequestMapping("/api/live")
+@RequestMapping("/live") // <<-- OJO: el context-path /api viene del application.yml
 public class LiveFlightController {
 
     private final LiveFlightService liveService;
@@ -30,40 +29,29 @@ public class LiveFlightController {
         this.registry = registry;
     }
 
-    /**
-     * Endpoint para suscribirse al flujo SSE de actualizaciones en tiempo real.
-     * Produces: text/event-stream
-     */
+    /** SSE: text/event-stream */
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter stream() {
         return registry.subscribe();
     }
 
-    /**
-     * Búsqueda de vuelos (en vivo + simulados) mediante parámetros JSON.
-     * Valida los datos recibidos antes de consultar el servicio.
-     */
+    /** Búsqueda de vuelos (en vivo + simulados) */
     @PostMapping(value = "/flights/search", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LiveFlight>> search(@Valid @RequestBody FlightSearchDTO dto) {
         if (dto.getOrigin() == null || dto.getDestination() == null
                 || dto.getOrigin().isBlank() || dto.getDestination().isBlank()) {
             return ResponseEntity.unprocessableEntity().build();
         }
-
         List<LiveFlight> results = liveService.searchLive(
                 dto.getOrigin(),
                 dto.getDestination(),
                 dto.getDate() != null ? dto.getDate().toString() : null,
                 null
         );
-
         return ResponseEntity.ok(results);
     }
 
-    /**
-     * Autocompletado de aeropuertos (API pública para sugerencias de búsqueda).
-     * Ejemplo: /api/live/airports/search?query=bog
-     */
+    /** Autocompletado de aeropuertos */
     @GetMapping(value = "/airports/search", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Map<String, Object>>> airports(@RequestParam("query") String query) {
         if (query == null || query.isBlank()) {

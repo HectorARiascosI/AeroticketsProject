@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -46,20 +47,25 @@ public class SimulationRegistry {
         LocalDateTime now = LocalDateTime.now(tz);
 
         for (LiveFlight f : live.values()) {
-            LocalDateTime dep = LocalDateTime.parse(f.getDepartureAt());
-            LocalDateTime arr = LocalDateTime.parse(f.getArrivalAt());
+            // Si por cualquier razón viene null o formato inválido, lo ignoramos
+            try {
+                LocalDateTime dep = LocalDateTime.parse(f.getDepartureAt());
+                LocalDateTime arr = LocalDateTime.parse(f.getArrivalAt());
 
-            if ("CANCELLED".equals(f.getStatus()) || "DIVERTED".equals(f.getStatus())) continue;
+                if ("CANCELLED".equals(f.getStatus()) || "DIVERTED".equals(f.getStatus())) continue;
 
-            boolean delayed = f.getDelayMinutes() != null && f.getDelayMinutes() > 10;
-            if (now.isBefore(dep.minusMinutes(60))) {
-                f.setStatus("SCHEDULED");
-            } else if (!now.isAfter(dep) && now.isAfter(dep.minusMinutes(60))) {
-                f.setStatus(delayed ? "DELAYED" : "BOARDING");
-            } else if (now.isAfter(dep) && now.isBefore(arr)) {
-                f.setStatus(delayed ? "DELAYED" : "EN-ROUTE");
-            } else {
-                f.setStatus("LANDED");
+                boolean delayed = f.getDelayMinutes() != null && f.getDelayMinutes() > 10;
+                if (now.isBefore(dep.minusMinutes(60))) {
+                    f.setStatus("SCHEDULED");
+                } else if (!now.isAfter(dep) && now.isAfter(dep.minusMinutes(60))) {
+                    f.setStatus(delayed ? "DELAYED" : "BOARDING");
+                } else if (now.isAfter(dep) && now.isBefore(arr)) {
+                    f.setStatus(delayed ? "DELAYED" : "EN-ROUTE");
+                } else {
+                    f.setStatus("LANDED");
+                }
+            } catch (Exception ignore) {
+                // Evita que una entrada malformada rompa todo el tick
             }
         }
         broadcastSnapshot();
@@ -67,15 +73,25 @@ public class SimulationRegistry {
 
     // SSE
     public SseEmitter subscribe() {
+        // 0L = sin timeout (Tomcat no cerrará por timeout). El front seguirá recibiendo eventos.
         SseEmitter emitter = new SseEmitter(0L);
         subscribers.add(emitter);
+
         emitter.onCompletion(() -> subscribers.remove(emitter));
         emitter.onTimeout(() -> subscribers.remove(emitter));
+        emitter.onError((ex) -> subscribers.remove(emitter));
+
+        // Enviar snapshot inicial y un "ping" para asegurar la apertura del stream
         try {
             emitter.send(SseEmitter.event()
                     .name("snapshot")
                     .data(list(), MediaType.APPLICATION_JSON));
-        } catch (Exception ignored) {}
+            emitter.send(SseEmitter.event()
+                    .name("ping")
+                    .data("ok"));
+        } catch (IOException ignored) {
+            subscribers.remove(emitter);
+        }
         return emitter;
     }
 
@@ -86,7 +102,7 @@ public class SimulationRegistry {
                 em.send(SseEmitter.event()
                         .name("snapshot")
                         .data(snapshot, MediaType.APPLICATION_JSON));
-            } catch (Exception e) {
+            } catch (IOException e) {
                 subscribers.remove(em);
             }
         }

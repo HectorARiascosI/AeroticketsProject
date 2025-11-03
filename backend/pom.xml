@@ -22,16 +22,10 @@
   </properties>
 
   <dependencies>
-    <!-- Spring Boot Web MVC -->
+    <!-- Web MVC (SseEmitter) -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-
-    <!-- WebFlux para WebClient -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webflux</artifactId>
     </dependency>
 
     <!-- Carga de variables .env -->
@@ -96,7 +90,7 @@
       <optional>true</optional>
     </dependency>
 
-    <!-- Cache con Caffeine (sin version para evitar duplicados) -->
+    <!-- Cache con Caffeine -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-cache</artifactId>
@@ -104,12 +98,6 @@
     <dependency>
       <groupId>com.github.ben-manes.caffeine</groupId>
       <artifactId>caffeine</artifactId>
-    </dependency>
-
-    <!-- Reactor Netty (sin version, controlada por Boot) -->
-    <dependency>
-      <groupId>io.projectreactor.netty</groupId>
-      <artifactId>reactor-netty-http</artifactId>
     </dependency>
 
     <!-- Tests -->
