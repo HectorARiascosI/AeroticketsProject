@@ -1,4 +1,5 @@
 import axios from "axios";
+import { normalizeFlight } from "../utils/normalizeFlight";
 
 export interface Flight {
   airline: string;
@@ -35,16 +36,20 @@ function normalize(text: string) {
 // ✅ Envío robusto y compatible con el backend
 export async function searchFlights(origin: string, destination: string, date: string) {
   const payload = {
-    origin: origin.trim(),        // no convertir a minúsculas ni normalizar
+    origin: origin.trim(),
     destination: destination.trim(),
-    date: date || new Date().toISOString().split("T")[0]
+    date: date || new Date().toISOString().split("T")[0],
   };
 
   try {
     const { data } = await axios.post(`${API}/live/flights/search`, payload, {
       headers: { "Content-Type": "application/json" },
     });
-    const flights: Flight[] = Array.isArray(data) ? data : [];
+
+    const flights: Flight[] = Array.isArray(data)
+      ? data.map((f) => normalizeFlight(f))
+      : [];
+
     return flights.sort(
       (a, b) =>
         new Date(a.departureAt).getTime() - new Date(b.departureAt).getTime()
@@ -66,7 +71,7 @@ export async function autocompleteAirports(query: string) {
       ? data.map((a: any) => ({
           iata: a.iata,
           city: a.city,
-          label: `${a.city} (${a.iata}) - ${a.airport}`
+          label: `${a.city} (${a.iata}) - ${a.airport}`,
         }))
       : [];
   } catch (e) {

@@ -147,13 +147,17 @@ public class FlightSimulatorService {
         return Math.max(40, (int)Math.round(hours*60) + taxi + jitter);
     }
 
+ 
+
     private int wxPenalty(WeatherProfileCatalog.Wx wx) {
         int d = 0;
-        if (wx.heavyRain) d += 10 + (int)(Math.random()*10);
-        if (wx.fog) d += 8 + (int)(Math.random()*6);
-        if (wx.crosswindKts >= 22) d += 6;
+        // Suavizamos: la mayoría de vuelos no deberían pasar de 10–15 min por clima
+        if (wx.heavyRain) d += 6 + (int)(Math.random()*6); // antes 10–20
+        if (wx.fog)      d += 4 + (int)(Math.random()*4); // antes 8–14
+        if (wx.crosswindKts >= 24) d += 4;                 // antes 6 con umbral 22
         return d;
     }
+
 
     private String nowStatus(LocalDateTime dep, LocalDateTime arr, ZoneId tz, int delay) {
         LocalDateTime now = LocalDateTime.now(tz);

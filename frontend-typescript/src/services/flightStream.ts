@@ -1,5 +1,6 @@
 // src/services/flightStream.ts
 import { Flight } from "./flightService";
+import { normalizeFlight } from "../utils/normalizeFlight";
 
 export type OnFlightUpdate = (flight: Flight) => void;
 
@@ -13,8 +14,12 @@ export class FlightStream {
 
     this.source.onmessage = (event) => {
       try {
-        const flight: Flight = JSON.parse(event.data);
-        onUpdate(flight);
+        const data = JSON.parse(event.data);
+        if (Array.isArray(data)) {
+          data.forEach((f) => onUpdate(normalizeFlight(f)));
+        } else {
+          onUpdate(normalizeFlight(data));
+        }
       } catch (err) {
         console.error("Error parsing flight update:", err);
       }
